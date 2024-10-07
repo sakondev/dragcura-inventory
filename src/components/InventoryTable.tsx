@@ -7,9 +7,10 @@ interface InventoryTableProps {
   branches: Branch[];
   inventoryData: InventoryData;
   selectedDate: string;
+  searchTerm: string;
 }
 
-const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, inventoryData, selectedDate }) => {
+const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, inventoryData, selectedDate, searchTerm }) => {
   const dateKey = selectedDate.substring(0, 10);
   const stockData = Object.keys(inventoryData).reduce((acc, key) => {
     if (key.startsWith(dateKey)) {
@@ -17,6 +18,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
     }
     return acc;
   }, [] as InventoryData[string]);
+
+  const filteredItems = items.filter(item =>
+    item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Table>
@@ -31,7 +37,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((item) => {
+        {filteredItems.map((item) => {
           let total = 0;
           return (
             <TableRow key={item.id}>
