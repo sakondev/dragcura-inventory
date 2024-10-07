@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Item, Branch, InventoryData } from '@/types/types';
 import { ArrowUpDown } from 'lucide-react';
-import { useInView } from 'react-intersection-observer';
 
 interface InventoryTableProps {
   items: Item[];
@@ -13,16 +12,9 @@ interface InventoryTableProps {
   selectedBranch: string;
 }
 
-const ITEMS_PER_PAGE = 50;
-
 const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, inventoryData, selectedDate, searchTerm, selectedBranch }) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
-  const [visibleItems, setVisibleItems] = useState<Item[]>([]);
-  const [page, setPage] = useState(1);
-  const { ref, inView } = useInView({
-    threshold: 0,
-  });
 
   const dateKey = selectedDate.substring(0, 10);
   const stockData = Object.keys(inventoryData).reduce((acc, key) => {
@@ -39,33 +31,16 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
 
   const filteredBranches = selectedBranch === 'all' ? branches : branches.filter(branch => branch.id.toString() === selectedBranch);
 
-  useEffect(() => {
-    const sortedItems = [...filteredItems].sort((a, b) => {
-      if (!sortColumn) return 0;
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (!sortColumn) return 0;
 
-      const aValue = getItemValue(a, sortColumn);
-      const bValue = getItemValue(b, sortColumn);
+    const aValue = getItemValue(a, sortColumn);
+    const bValue = getItemValue(b, sortColumn);
 
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    setVisibleItems(sortedItems.slice(0, ITEMS_PER_PAGE));
-    setPage(1);
-  }, [filteredItems, sortColumn, sortDirection]);
-
-  useEffect(() => {
-    if (inView) {
-      loadMoreItems();
-    }
-  }, [inView]);
-
-  const loadMoreItems = () => {
-    const nextItems = filteredItems.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
-    setVisibleItems(prevItems => [...prevItems, ...nextItems]);
-    setPage(prevPage => prevPage + 1);
-  };
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   function getItemValue(item: Item, column: string): number {
     if (column === 'total') {
@@ -138,7 +113,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
           </TableRow>
         </TableHeader>
         <TableBody>
-          {visibleItems.map((item) => {
+          {sortedItems.map((item) => {
             let total = 0;
             return (
               <TableRow key={item.id} className="border-b hover:bg-gray-50">
@@ -168,7 +143,6 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
           })}
         </TableBody>
       </Table>
-      <div ref={ref} style={{ height: '20px' }}></div>
     </div>
   );
 };

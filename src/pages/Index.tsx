@@ -154,7 +154,7 @@ const Index = () => {
       </div>
       <div className="mb-4 p-4 bg-gray-100 rounded-md">
         <p className="text-lg font-semibold">
-          Total Items: {totalItems} | Total Quantity: {totalQuantity} | Showing: 50 items per page
+          Total Items: {totalItems} | Total Quantity: {totalQuantity}
         </p>
       </div>
       <div className="mb-4 flex justify-start space-x-2">
