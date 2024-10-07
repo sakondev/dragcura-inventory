@@ -69,60 +69,81 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
   };
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>SKU</TableHead>
-          <TableHead>Name</TableHead>
-          {selectedBranch === 'all' ? (
-            <>
-              {filteredBranches.map((branch) => (
-                <TableHead key={branch.id} onClick={() => handleSort(branch.id.toString())} className="cursor-pointer">
-                  {branch.name} <ArrowUpDown className="inline ml-1" size={16} />
+    <div className="overflow-x-auto">
+      <Table className="w-full border-collapse">
+        <TableHeader>
+          <TableRow className="bg-gray-100">
+            <TableHead className="p-2 text-left font-semibold">SKU</TableHead>
+            <TableHead className="p-2 text-left font-semibold">Name</TableHead>
+            {selectedBranch === 'all' ? (
+              <>
+                {filteredBranches.map((branch) => (
+                  <TableHead
+                    key={branch.id}
+                    onClick={() => handleSort(branch.id.toString())}
+                    className="p-2 text-left font-semibold cursor-pointer"
+                  >
+                    <div className="flex items-center">
+                      <span className="mr-1">{branch.name}</span>
+                      <ArrowUpDown className="inline" size={12} />
+                    </div>
+                  </TableHead>
+                ))}
+                <TableHead
+                  onClick={() => handleSort('total')}
+                  className="p-2 text-left font-semibold cursor-pointer"
+                >
+                  <div className="flex items-center">
+                    <span className="mr-1">Total</span>
+                    <ArrowUpDown className="inline" size={12} />
+                  </div>
                 </TableHead>
-              ))}
-              <TableHead onClick={() => handleSort('total')} className="cursor-pointer">
-                Total <ArrowUpDown className="inline ml-1" size={16} />
+              </>
+            ) : (
+              <TableHead
+                onClick={() => handleSort(selectedBranch)}
+                className="p-2 text-left font-semibold cursor-pointer"
+              >
+                <div className="flex items-center">
+                  <span className="mr-1">Qty</span>
+                  <ArrowUpDown className="inline" size={12} />
+                </div>
               </TableHead>
-            </>
-          ) : (
-            <TableHead onClick={() => handleSort(selectedBranch)} className="cursor-pointer">
-              Qty <ArrowUpDown className="inline ml-1" size={16} />
-            </TableHead>
-          )}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {sortedItems.map((item) => {
-          let total = 0;
-          return (
-            <TableRow key={item.id}>
-              <TableCell>{item.sku}</TableCell>
-              <TableCell>{item.name}</TableCell>
-              {selectedBranch === 'all' ? (
-                <>
-                  {filteredBranches.map((branch) => {
-                    const stock = stockData.find(
-                      (inv) => inv.item_id === item.id && inv.branch_id === branch.id
-                    );
-                    const stockValue = stock ? stock.stock : 0;
-                    total += stockValue;
-                    return <TableCell key={branch.id}>{stockValue}</TableCell>;
-                  })}
-                  <TableCell>{total}</TableCell>
-                </>
-              ) : (
-                <TableCell>
-                  {stockData.find(
-                    (inv) => inv.item_id === item.id && inv.branch_id === parseInt(selectedBranch)
-                  )?.stock || 0}
-                </TableCell>
-              )}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+            )}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedItems.map((item) => {
+            let total = 0;
+            return (
+              <TableRow key={item.id} className="border-b hover:bg-gray-50">
+                <TableCell className="p-2">{item.sku}</TableCell>
+                <TableCell className="p-2">{item.name}</TableCell>
+                {selectedBranch === 'all' ? (
+                  <>
+                    {filteredBranches.map((branch) => {
+                      const stock = stockData.find(
+                        (inv) => inv.item_id === item.id && inv.branch_id === branch.id
+                      );
+                      const stockValue = stock ? stock.stock : 0;
+                      total += stockValue;
+                      return <TableCell key={branch.id} className="p-2 text-right">{stockValue}</TableCell>;
+                    })}
+                    <TableCell className="p-2 text-right font-semibold">{total}</TableCell>
+                  </>
+                ) : (
+                  <TableCell className="p-2 text-right">
+                    {stockData.find(
+                      (inv) => inv.item_id === item.id && inv.branch_id === parseInt(selectedBranch)
+                    )?.stock || 0}
+                  </TableCell>
+                )}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
