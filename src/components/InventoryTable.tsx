@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Item, Branch, InventoryData } from '@/types/types';
 import { ArrowUpDown } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
 
 interface InventoryTableProps {
   items: Item[];
@@ -84,6 +85,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                     </div>
                   </TableHead>
                 ))}
+                <TableHead className="p-2">
+                  <Separator orientation="vertical" className="h-full mx-auto" />
+                </TableHead>
                 <TableHead
                   onClick={() => handleSort('total')}
                   className="p-2 text-left font-semibold cursor-pointer"
@@ -124,6 +128,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                       total += stockValue;
                       return <TableCell key={branch.id} className="p-2 text-right">{stockValue}</TableCell>;
                     })}
+                    <TableCell className="p-2">
+                      <Separator orientation="vertical" className="h-full mx-auto" />
+                    </TableCell>
                     <TableCell className="p-2 text-right font-semibold">{total}</TableCell>
                   </>
                 ) : (
