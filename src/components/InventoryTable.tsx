@@ -24,14 +24,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
     return acc;
   }, [] as InventoryData[string]);
 
-  const filteredItems = items.filter(item =>
-    item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const filteredBranches = selectedBranch === 'all' ? branches : branches.filter(branch => branch.id.toString() === selectedBranch);
 
-  const sortedItems = [...filteredItems].sort((a, b) => {
+  const sortedItems = [...items].sort((a, b) => {
     if (!sortColumn) return 0;
 
     const aValue = getItemValue(a, sortColumn);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DatabaseResponse, Branch, InventoryItem } from '@/types/types';
+import { DatabaseResponse, Branch, InventoryItem, Item } from '@/types/types';
 import InventoryTable from '@/components/InventoryTable';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
-  const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database.json');
+  const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database2.json');
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -84,10 +84,21 @@ const Index = () => {
   const minDate = dates[dates.length - 1].substring(0, 10);
   const maxDate = dates[0].substring(0, 10);
 
-  const filteredItems = data.items.filter(item =>
-    item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filterItems = (items: Item[], branch: Branch | null): Item[] => {
+    let filteredItems = items.filter(item =>
+      item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (branch && branch.onlySKUs) {
+      filteredItems = filteredItems.filter(item => branch.onlySKUs!.includes(item.sku));
+    }
+
+    return filteredItems;
+  };
+
+  const selectedBranchObject = selectedBranch === 'all' ? null : data.branches.find(b => b.id.toString() === selectedBranch);
+  const filteredItems = filterItems(data.items, selectedBranchObject);
 
   const calculateTotalQuantity = (items: typeof filteredItems): number => {
     const dateKey = selectedDate.substring(0, 10);
