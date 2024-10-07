@@ -9,19 +9,11 @@ import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
-  try {
-    const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database2.json');
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const text = await response.text(); // Get the response as text
-    console.log('Raw JSON:', text); // Log the raw JSON
-    const data = JSON.parse(text); // Parse the text to JSON
-    return data;
-  } catch (error) {
-    console.error('Error fetching inventory data:', error);
-    throw error;
+  const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database2.json');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
   }
+  return response.json();
 };
 
 const Index = () => {
