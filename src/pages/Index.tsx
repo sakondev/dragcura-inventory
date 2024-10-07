@@ -13,7 +13,23 @@ const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
-  return response.json();
+  const data: DatabaseResponse = await response.json();
+  
+  // Deduplicate and use the latest stock value for each item_id and branch_id pair
+  const deduplicatedInventory: InventoryData = {};
+  for (const [date, items] of Object.entries(data.inventory)) {
+    deduplicatedInventory[date] = items.reduce((acc: InventoryItem[], curr: InventoryItem) => {
+      const existingItem = acc.find(item => item.item_id === curr.item_id && item.branch_id === curr.branch_id);
+      if (existingItem) {
+        existingItem.stock = curr.stock; // Update with the latest stock value
+      } else {
+        acc.push(curr);
+      }
+      return acc;
+    }, []);
+  }
+  
+  return { ...data, inventory: deduplicatedInventory };
 };
 
 const Index = () => {
