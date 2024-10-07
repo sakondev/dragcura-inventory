@@ -64,6 +64,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
     }
   };
 
+  const renderSeparator = () => (
+    <TableCell className="p-0 w-[1px]">
+      <Separator orientation="vertical" className="h-full mx-auto" />
+    </TableCell>
+  );
+
   return (
     <div className="overflow-x-auto">
       <Table className="w-full border-collapse">
@@ -77,28 +83,22 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                   <React.Fragment key={branch.id}>
                     <TableHead
                       onClick={() => handleSort(branch.id.toString())}
-                      className="p-2 text-left font-semibold cursor-pointer"
+                      className="p-2 text-center font-semibold cursor-pointer"
                     >
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-center">
                         <span className="mr-1">{branch.name}</span>
                         <ArrowUpDown className="inline" size={12} />
                       </div>
                     </TableHead>
-                    {index < filteredBranches.length - 1 && (
-                      <TableHead className="p-0 w-[1px]">
-                        <Separator orientation="vertical" className="h-full mx-auto" />
-                      </TableHead>
-                    )}
+                    {index < filteredBranches.length - 1 && renderSeparator()}
                   </React.Fragment>
                 ))}
-                <TableHead className="p-0 w-[1px]">
-                  <Separator orientation="vertical" className="h-full mx-auto" />
-                </TableHead>
+                {renderSeparator()}
                 <TableHead
                   onClick={() => handleSort('total')}
-                  className="p-2 text-left font-semibold cursor-pointer"
+                  className="p-2 text-center font-semibold cursor-pointer"
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-center">
                     <span className="mr-1">Total</span>
                     <ArrowUpDown className="inline" size={12} />
                   </div>
@@ -107,9 +107,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
             ) : (
               <TableHead
                 onClick={() => handleSort(selectedBranch)}
-                className="p-2 text-left font-semibold cursor-pointer"
+                className="p-2 text-center font-semibold cursor-pointer"
               >
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <span className="mr-1">Qty</span>
                   <ArrowUpDown className="inline" size={12} />
                 </div>
@@ -134,22 +134,16 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                       total += stockValue;
                       return (
                         <React.Fragment key={branch.id}>
-                          <TableCell className="p-2 text-right">{stockValue}</TableCell>
-                          {index < filteredBranches.length - 1 && (
-                            <TableCell className="p-0 w-[1px]">
-                              <Separator orientation="vertical" className="h-full mx-auto" />
-                            </TableCell>
-                          )}
+                          <TableCell className="p-2 text-center">{stockValue}</TableCell>
+                          {index < filteredBranches.length - 1 && renderSeparator()}
                         </React.Fragment>
                       );
                     })}
-                    <TableCell className="p-0 w-[1px]">
-                      <Separator orientation="vertical" className="h-full mx-auto" />
-                    </TableCell>
-                    <TableCell className="p-2 text-right font-semibold">{total}</TableCell>
+                    {renderSeparator()}
+                    <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
                   </>
                 ) : (
-                  <TableCell className="p-2 text-right">
+                  <TableCell className="p-2 text-center">
                     {stockData.find(
                       (inv) => inv.item_id === item.id && inv.branch_id === parseInt(selectedBranch)
                     )?.stock || 0}
