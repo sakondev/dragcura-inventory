@@ -54,8 +54,8 @@ const Index = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">DragCura Inventory</h1>
-      <div className="mb-4 space-y-4">
-        <div>
+      <div className="mb-4 flex flex-wrap gap-4">
+        <div className="flex-1 min-w-[200px]">
           <label htmlFor="dateFilter" className="block mb-2">Select Date:</label>
           <Input
             type="date"
@@ -67,7 +67,7 @@ const Index = () => {
             className="w-full"
           />
         </div>
-        <div>
+        <div className="flex-1 min-w-[200px]">
           <label htmlFor="searchFilter" className="block mb-2">Search:</label>
           <Input
             type="text"
@@ -78,7 +78,7 @@ const Index = () => {
             className="w-full"
           />
         </div>
-        <div>
+        <div className="flex-1 min-w-[200px]">
           <label htmlFor="branchFilter" className="block mb-2">Branch:</label>
           <Select onValueChange={handleBranchChange} value={selectedBranch}>
             <SelectTrigger className="w-full">
