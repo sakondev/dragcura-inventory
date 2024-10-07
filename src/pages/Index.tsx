@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import * as XLSX from 'xlsx';
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database.json');
@@ -48,6 +49,18 @@ const Index = () => {
         toast.error('Failed to copy table');
         console.error('Failed to copy table: ', err);
       });
+    }
+  };
+
+  const handleExportExcel = () => {
+    const table = document.querySelector('table');
+    if (table) {
+      const wb = XLSX.utils.table_to_book(table);
+      const fileName = `DragCura_Inventory_${selectedDate}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      toast.success(`Exported to ${fileName}`);
+    } else {
+      toast.error('Failed to export table');
     }
   };
 
@@ -144,8 +157,9 @@ const Index = () => {
           Total Items: {totalItems} | Total Quantity: {totalQuantity}
         </p>
       </div>
-      <div className="mb-4 flex justify-end">
-        <Button onClick={handleCopyTable}>Copy Table</Button>
+      <div className="mb-4 flex justify-start space-x-2">
+        <Button onClick={handleCopyTable}>COPY</Button>
+        <Button onClick={handleExportExcel}>EXCEL</Button>
       </div>
       <InventoryTable
         items={data.items}
@@ -155,9 +169,6 @@ const Index = () => {
         searchTerm={searchTerm}
         selectedBranch={selectedBranch}
       />
-      <div className="mt-4 flex space-x-2">
-        <Button onClick={() => window.print()}>Print</Button>
-      </div>
     </div>
   );
 };
