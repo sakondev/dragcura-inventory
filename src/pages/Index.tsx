@@ -13,23 +13,7 @@ const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
-  const data: DatabaseResponse = await response.json();
-  
-  // Deduplicate and use the latest stock value for each item_id and branch_id pair
-  const deduplicatedInventory: InventoryData = {};
-  for (const [date, items] of Object.entries(data.inventory)) {
-    deduplicatedInventory[date] = items.reduce((acc: InventoryItem[], curr: InventoryItem) => {
-      const existingItem = acc.find(item => item.item_id === curr.item_id && item.branch_id === curr.branch_id);
-      if (existingItem) {
-        existingItem.stock = curr.stock; // Update with the latest stock value
-      } else {
-        acc.push(curr);
-      }
-      return acc;
-    }, []);
-  }
-  
-  return { ...data, inventory: deduplicatedInventory };
+  return response.json();
 };
 
 const Index = () => {
@@ -50,17 +34,10 @@ const Index = () => {
   }, [data]);
 
   const handleCopyTable = () => {
-    const table = document.querySelector('table');
-    if (table) {
-      const rows = Array.from(table.querySelectorAll('tr'));
-      const csvContent = rows.map(row => 
-        Array.from(row.querySelectorAll('th, td'))
-          .map(cell => cell.textContent)
-          .join('\t')
-      ).join('\n');
-
+    if (data) {
+      const csvContent = generateCSVContent(data.items, data.branches, data.inventory, selectedDate, selectedBranch);
       navigator.clipboard.writeText(csvContent).then(() => {
-        toast.success(`Copied ${rows.length - 1} rows to clipboard`);
+        toast.success(`Copied ${data.items.length} rows to clipboard`);
       }).catch(err => {
         toast.error('Failed to copy table');
         console.error('Failed to copy table: ', err);
@@ -69,15 +46,24 @@ const Index = () => {
   };
 
   const handleExportExcel = () => {
-    const table = document.querySelector('table');
-    if (table) {
-      const wb = XLSX.utils.table_to_book(table);
+    if (data) {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(generateExcelData(data.items, data.branches, data.inventory, selectedDate, selectedBranch));
+      XLSX.utils.book_append_sheet(wb, ws, "Inventory");
       const fileName = `DragCura_Inventory_${selectedDate}.xlsx`;
       XLSX.writeFile(wb, fileName);
       toast.success(`Exported to ${fileName}`);
     } else {
       toast.error('Failed to export table');
     }
+  };
+
+  const generateCSVContent = (items: Item[], branches: Branch[], inventoryData: InventoryData, date: string, branchId: string): string => {
+    // Implement CSV generation logic here
+  };
+
+  const generateExcelData = (items: Item[], branches: Branch[], inventoryData: InventoryData, date: string, branchId: string): any[][] => {
+    // Implement Excel data generation logic here
   };
 
   if (isLoading) return <div>Loading...</div>;

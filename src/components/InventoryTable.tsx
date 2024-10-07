@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Item, Branch, InventoryData } from '@/types/types';
 import { ArrowUpDown } from 'lucide-react';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface InventoryTableProps {
   items: Item[];
@@ -15,6 +17,8 @@ interface InventoryTableProps {
 const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, inventoryData, selectedDate, searchTerm, selectedBranch }) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [itemsPerPage, setItemsPerPage] = useState<number | 'all'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const dateKey = selectedDate.substring(0, 10);
   const stockData = Object.keys(inventoryData).reduce((acc, key) => {
@@ -37,6 +41,10 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
     return 0;
   });
 
+  const totalPages = itemsPerPage === 'all' ? 1 : Math.ceil(sortedItems.length / (itemsPerPage as number));
+  const paginatedItems = itemsPerPage === 'all' ? sortedItems : sortedItems.slice((currentPage - 1) * (itemsPerPage as number), currentPage * (itemsPerPage as number));
+
+  function getItemValue(item: Item, column: string): number {
   function getItemValue(item: Item, column: string): number {
     if (column === 'total') {
       return filteredBranches.reduce((total, branch) => {
@@ -53,7 +61,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
       return stock ? stock.stock : 0;
     }
   }
+  }
 
+  const handleSort = (column: string) => {
   const handleSort = (column: string) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -62,11 +72,30 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
       setSortDirection('desc');
     }
   };
+  }
+
+  const handleItemsPerPageChange = (value: string) => {
+    setItemsPerPage(value === 'all' ? 'all' : parseInt(value));
+    setCurrentPage(1);
+  };
 
   return (
-    <div className="overflow-x-auto">
-      <Table className="w-full border-collapse">
-        <TableHeader>
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <Select onValueChange={handleItemsPerPageChange} value={itemsPerPage.toString()}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Items per page" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="30">30 per page</SelectItem>
+            <SelectItem value="100">100 per page</SelectItem>
+            <SelectItem value="all">All items</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="overflow-x-auto">
+        <Table className="w-full border-collapse">
+          <TableHeader>
           <TableRow className="bg-gray-100">
             <TableHead className="p-2 text-left font-semibold">SKU</TableHead>
             <TableHead className="p-2 text-left font-semibold">Name</TableHead>
@@ -106,9 +135,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
               </TableHead>
             )}
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sortedItems.map((item) => {
+          </TableHeader>
+          <TableBody>
+            {paginatedItems.map((item) => {
             let total = 0;
             return (
               <TableRow key={item.id} className="border-b hover:bg-gray-50">
@@ -135,9 +164,29 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                 )}
               </TableRow>
             );
-          })}
-        </TableBody>
-      </Table>
+            })}
+          </TableBody>
+        </Table>
+      </div>
+      {itemsPerPage !== 'all' && (
+        <Pagination className="mt-4">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <PaginationItem key={page}>
+                <PaginationLink onClick={() => setCurrentPage(page)} isActive={currentPage === page}>
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
