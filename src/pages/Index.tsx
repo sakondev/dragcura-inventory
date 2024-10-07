@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DatabaseResponse } from '@/types/types';
+import { DatabaseResponse, Branch } from '@/types/types';
 import InventoryTable from '@/components/InventoryTable';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database.json');
@@ -21,6 +22,7 @@ const Index = () => {
 
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedBranch, setSelectedBranch] = useState<string>('all');
 
   useEffect(() => {
     if (data) {
@@ -39,6 +41,10 @@ const Index = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleBranchChange = (value: string) => {
+    setSelectedBranch(value);
   };
 
   const dates = Object.keys(data.inventory).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
@@ -72,6 +78,20 @@ const Index = () => {
             className="w-64 inline-block"
           />
         </div>
+        <div>
+          <label htmlFor="branchFilter" className="mr-2">Branch:</label>
+          <Select onValueChange={handleBranchChange} value={selectedBranch}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select branch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Branches</SelectItem>
+              {data.branches.map((branch: Branch) => (
+                <SelectItem key={branch.id} value={branch.id.toString()}>{branch.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
       <div id="selectedDateTime" className="mb-4 inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
         {selectedDate}
@@ -82,6 +102,7 @@ const Index = () => {
         inventoryData={data.inventory}
         selectedDate={selectedDate}
         searchTerm={searchTerm}
+        selectedBranch={selectedBranch}
       />
       <div className="mt-4">
         <Button onClick={() => window.print()}>Print</Button>

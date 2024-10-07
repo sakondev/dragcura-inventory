@@ -8,9 +8,10 @@ interface InventoryTableProps {
   inventoryData: InventoryData;
   selectedDate: string;
   searchTerm: string;
+  selectedBranch: string;
 }
 
-const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, inventoryData, selectedDate, searchTerm }) => {
+const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, inventoryData, selectedDate, searchTerm, selectedBranch }) => {
   const dateKey = selectedDate.substring(0, 10);
   const stockData = Object.keys(inventoryData).reduce((acc, key) => {
     if (key.startsWith(dateKey)) {
@@ -24,16 +25,24 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const filteredBranches = selectedBranch === 'all' ? branches : branches.filter(branch => branch.id.toString() === selectedBranch);
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>SKU</TableHead>
           <TableHead>Name</TableHead>
-          {branches.map((branch) => (
-            <TableHead key={branch.id}>{branch.name}</TableHead>
-          ))}
-          <TableHead>Total</TableHead>
+          {selectedBranch === 'all' ? (
+            <>
+              {filteredBranches.map((branch) => (
+                <TableHead key={branch.id}>{branch.name}</TableHead>
+              ))}
+              <TableHead>Total</TableHead>
+            </>
+          ) : (
+            <TableHead>Qty</TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -43,15 +52,25 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
             <TableRow key={item.id}>
               <TableCell>{item.sku}</TableCell>
               <TableCell>{item.name}</TableCell>
-              {branches.map((branch) => {
-                const stock = stockData.find(
-                  (inv) => inv.item_id === item.id && inv.branch_id === branch.id
-                );
-                const stockValue = stock ? stock.stock : 0;
-                total += stockValue;
-                return <TableCell key={branch.id}>{stockValue}</TableCell>;
-              })}
-              <TableCell>{total}</TableCell>
+              {selectedBranch === 'all' ? (
+                <>
+                  {filteredBranches.map((branch) => {
+                    const stock = stockData.find(
+                      (inv) => inv.item_id === item.id && inv.branch_id === branch.id
+                    );
+                    const stockValue = stock ? stock.stock : 0;
+                    total += stockValue;
+                    return <TableCell key={branch.id}>{stockValue}</TableCell>;
+                  })}
+                  <TableCell>{total}</TableCell>
+                </>
+              ) : (
+                <TableCell>
+                  {stockData.find(
+                    (inv) => inv.item_id === item.id && inv.branch_id === parseInt(selectedBranch)
+                  )?.stock || 0}
+                </TableCell>
+              )}
             </TableRow>
           );
         })}
