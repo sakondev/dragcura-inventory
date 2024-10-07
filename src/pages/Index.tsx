@@ -5,11 +5,12 @@ import InventoryTable from '@/components/InventoryTable';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
-  const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database.json');
+  const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database2.json');
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -25,6 +26,7 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedBranch, setSelectedBranch] = useState<string>('all');
+  const [showVendingMachineOnly, setShowVendingMachineOnly] = useState<boolean>(false);
 
   useEffect(() => {
     if (data) {
@@ -78,15 +80,24 @@ const Index = () => {
 
   const handleBranchChange = (value: string) => {
     setSelectedBranch(value);
+    setShowVendingMachineOnly(false);
+  };
+
+  const handleVendingMachineToggle = (checked: boolean) => {
+    setShowVendingMachineOnly(checked);
   };
 
   const dates = Object.keys(data.inventory).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   const minDate = dates[dates.length - 1].substring(0, 10);
   const maxDate = dates[0].substring(0, 10);
 
+  const selectedBranchObj = data.branches.find(branch => branch.id.toString() === selectedBranch);
+  const isVendingMachine = selectedBranchObj?.isVendingMachine || false;
+
   const filteredItems = data.items.filter(item =>
-    item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    (item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (!isVendingMachine || !showVendingMachineOnly || (selectedBranchObj?.vendingMachineSKUs?.includes(item.sku)))
   );
 
   const calculateTotalQuantity = (items: typeof filteredItems): number => {
@@ -154,6 +165,21 @@ const Index = () => {
             </SelectContent>
           </Select>
         </div>
+        {isVendingMachine && (
+          <div className="flex-1 min-w-[200px] flex items-center">
+            <Checkbox
+              id="vendingMachineOnly"
+              checked={showVendingMachineOnly}
+              onCheckedChange={handleVendingMachineToggle}
+            />
+            <label
+              htmlFor="vendingMachineOnly"
+              className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Show Vending Machine Items Only
+            </label>
+          </div>
+        )}
       </div>
       <div className="mb-4 p-4 bg-gray-100 rounded-md">
         <p className="text-lg font-semibold">

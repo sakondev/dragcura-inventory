@@ -7,6 +7,8 @@ export interface Item {
 export interface Branch {
   id: number;
   name: string;
+  isVendingMachine?: boolean;
+  vendingMachineSKUs?: string[];
 }
 
 export interface InventoryItem {
