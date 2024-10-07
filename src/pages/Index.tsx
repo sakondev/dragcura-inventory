@@ -64,21 +64,11 @@ const Index = () => {
     }
   };
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred: {(error as Error).message}</div>;
-  if (!data) return <div>No data available</div>;
+  if (isLoading) return <div className="text-center p-4">กำลังโหลดข้อมูล...</div>;
+  if (error) return <div className="text-center p-4 text-red-500">เกิดข้อผิดพลาด: {(error as Error).message}</div>;
+  if (!data) return <div className="text-center p-4">ไม่พบข้อมูล</div>;
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleBranchChange = (value: string) => {
-    setSelectedBranch(value);
-  };
+  console.log('Data loaded:', data); // เพิ่ม log เพื่อตรวจสอบข้อมูล
 
   const dates = Object.keys(data.inventory).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   const minDate = dates[dates.length - 1].substring(0, 10);
@@ -134,7 +124,7 @@ const Index = () => {
             type="date"
             id="dateFilter"
             value={selectedDate}
-            onChange={handleDateChange}
+            onChange={(e) => setSelectedDate(e.target.value)}
             min={minDate}
             max={maxDate}
             className="w-full"
@@ -146,7 +136,7 @@ const Index = () => {
             type="text"
             id="searchFilter"
             value={searchTerm}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by SKU or Name"
             className="w-full"
           />
@@ -175,14 +165,18 @@ const Index = () => {
         <Button onClick={handleCopyTable}>COPY</Button>
         <Button onClick={handleExportExcel}>EXCEL</Button>
       </div>
-      <InventoryTable
-        items={filteredItems}
-        branches={data.branches}
-        inventoryData={data.inventory}
-        selectedDate={selectedDate}
-        searchTerm={searchTerm}
-        selectedBranch={selectedBranch}
-      />
+      {filteredItems.length > 0 ? (
+        <InventoryTable
+          items={filteredItems}
+          branches={data.branches}
+          inventoryData={data.inventory}
+          selectedDate={selectedDate}
+          searchTerm={searchTerm}
+          selectedBranch={selectedBranch}
+        />
+      ) : (
+        <div className="text-center p-4">ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา</div>
+      )}
     </div>
   );
 };
