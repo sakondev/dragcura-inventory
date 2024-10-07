@@ -25,12 +25,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
   }, [] as InventoryData[string]);
 
   const selectedBranchObj = branches.find(branch => branch.id.toString() === selectedBranch);
-  const isVendingMachine = selectedBranchObj?.isVendingMachine || false;
 
   const filteredItems = items.filter(item =>
     (item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (!isVendingMachine || (selectedBranchObj?.vendingMachineSKUs?.includes(item.sku)))
+    (selectedBranch === 'all' || !selectedBranchObj?.onlySKUs || selectedBranchObj.onlySKUs.includes(item.sku))
   );
 
   const filteredBranches = selectedBranch === 'all' ? branches : branches.filter(branch => branch.id.toString() === selectedBranch);

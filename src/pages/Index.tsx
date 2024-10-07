@@ -5,7 +5,6 @@ import InventoryTable from '@/components/InventoryTable';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
 
@@ -26,7 +25,6 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedBranch, setSelectedBranch] = useState<string>('all');
-  const [showVendingMachineOnly, setShowVendingMachineOnly] = useState<boolean>(false);
 
   useEffect(() => {
     if (data) {
@@ -34,6 +32,58 @@ const Index = () => {
       setSelectedDate(dates[0].substring(0, 10));
     }
   }, [data]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>An error occurred: {(error as Error).message}</div>;
+  if (!data) return <div>No data available</div>;
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleBranchChange = (value: string) => {
+    setSelectedBranch(value);
+  };
+
+  const dates = Object.keys(data.inventory).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  const minDate = dates[dates.length - 1].substring(0, 10);
+  const maxDate = dates[0].substring(0, 10);
+
+  const selectedBranchObj = data.branches.find(branch => branch.id.toString() === selectedBranch);
+
+  const filteredItems = data.items.filter(item =>
+    (item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (selectedBranch === 'all' || !selectedBranchObj?.onlySKUs || selectedBranchObj.onlySKUs.includes(item.sku))
+  );
+
+  const calculateTotalQuantity = (items: typeof filteredItems): number => {
+    const dateKey = selectedDate.substring(0, 10);
+    const stockData = Object.keys(data.inventory).reduce((acc, key) => {
+      if (key.startsWith(dateKey)) {
+        return data.inventory[key];
+      }
+      return acc;
+    }, [] as InventoryItem[]);
+
+    return items.reduce((total, item) => {
+      const itemStocks = stockData.filter(stock => stock.item_id === item.id);
+      const itemTotal = itemStocks.reduce((itemSum, stock) => {
+        if (selectedBranch === 'all' || stock.branch_id.toString() === selectedBranch) {
+          return itemSum + stock.stock;
+        }
+        return itemSum;
+      }, 0);
+      return total + itemTotal;
+    }, 0);
+  };
+
+  const totalItems = filteredItems.length;
+  const totalQuantity = calculateTotalQuantity(filteredItems);
 
   const handleCopyTable = () => {
     const table = document.querySelector('table');
@@ -65,64 +115,6 @@ const Index = () => {
       toast.error('Failed to export table');
     }
   };
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred: {(error as Error).message}</div>;
-  if (!data) return <div>No data available</div>;
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleBranchChange = (value: string) => {
-    setSelectedBranch(value);
-    setShowVendingMachineOnly(false);
-  };
-
-  const handleVendingMachineToggle = (checked: boolean) => {
-    setShowVendingMachineOnly(checked);
-  };
-
-  const dates = Object.keys(data.inventory).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-  const minDate = dates[dates.length - 1].substring(0, 10);
-  const maxDate = dates[0].substring(0, 10);
-
-  const selectedBranchObj = data.branches.find(branch => branch.id.toString() === selectedBranch);
-  const isVendingMachine = selectedBranchObj?.isVendingMachine || false;
-
-  const filteredItems = data.items.filter(item =>
-    (item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (!isVendingMachine || !showVendingMachineOnly || (selectedBranchObj?.vendingMachineSKUs?.includes(item.sku)))
-  );
-
-  const calculateTotalQuantity = (items: typeof filteredItems): number => {
-    const dateKey = selectedDate.substring(0, 10);
-    const stockData = Object.keys(data.inventory).reduce((acc, key) => {
-      if (key.startsWith(dateKey)) {
-        return data.inventory[key];
-      }
-      return acc;
-    }, [] as InventoryItem[]);
-
-    return items.reduce((total, item) => {
-      const itemStocks = stockData.filter(stock => stock.item_id === item.id);
-      const itemTotal = itemStocks.reduce((itemSum, stock) => {
-        if (selectedBranch === 'all' || stock.branch_id.toString() === selectedBranch) {
-          return itemSum + stock.stock;
-        }
-        return itemSum;
-      }, 0);
-      return total + itemTotal;
-    }, 0);
-  };
-
-  const totalItems = filteredItems.length;
-  const totalQuantity = calculateTotalQuantity(filteredItems);
 
   return (
     <div className="container mx-auto p-4">
@@ -165,21 +157,6 @@ const Index = () => {
             </SelectContent>
           </Select>
         </div>
-        {isVendingMachine && (
-          <div className="flex-1 min-w-[200px] flex items-center">
-            <Checkbox
-              id="vendingMachineOnly"
-              checked={showVendingMachineOnly}
-              onCheckedChange={handleVendingMachineToggle}
-            />
-            <label
-              htmlFor="vendingMachineOnly"
-              className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Show Vending Machine Items Only
-            </label>
-          </div>
-        )}
       </div>
       <div className="mb-4 p-4 bg-gray-100 rounded-md">
         <p className="text-lg font-semibold">
