@@ -33,6 +33,10 @@ const Index = () => {
     }
   }, [data]);
 
+  const handleBranchChange = (value: string) => {
+    setSelectedBranch(value);
+  };
+
   const handleCopyTable = () => {
     const table = document.querySelector('table');
     if (table) {
