@@ -89,9 +89,7 @@ const Index = () => {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalItems = filteredItems.length;
-
-  const calculateTotalQuantity = (): number => {
+  const calculateTotalQuantity = (items: typeof filteredItems): number => {
     const dateKey = selectedDate.substring(0, 10);
     const stockData = Object.keys(data.inventory).reduce((acc, key) => {
       if (key.startsWith(dateKey)) {
@@ -100,15 +98,20 @@ const Index = () => {
       return acc;
     }, [] as InventoryItem[]);
 
-    return stockData.reduce((total, item) => {
-      if (selectedBranch === 'all' || item.branch_id.toString() === selectedBranch) {
-        return total + item.stock;
-      }
-      return total;
+    return items.reduce((total, item) => {
+      const itemStocks = stockData.filter(stock => stock.item_id === item.id);
+      const itemTotal = itemStocks.reduce((itemSum, stock) => {
+        if (selectedBranch === 'all' || stock.branch_id.toString() === selectedBranch) {
+          return itemSum + stock.stock;
+        }
+        return itemSum;
+      }, 0);
+      return total + itemTotal;
     }, 0);
   };
 
-  const totalQuantity = calculateTotalQuantity();
+  const totalItems = filteredItems.length;
+  const totalQuantity = calculateTotalQuantity(filteredItems);
 
   return (
     <div className="container mx-auto p-4">
@@ -162,7 +165,7 @@ const Index = () => {
         <Button onClick={handleExportExcel}>EXCEL</Button>
       </div>
       <InventoryTable
-        items={data.items}
+        items={filteredItems}
         branches={data.branches}
         inventoryData={data.inventory}
         selectedDate={selectedDate}
