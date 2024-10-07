@@ -76,7 +76,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
         <TableHeader>
           <TableRow className="bg-gray-100">
             <TableHead className="p-2 text-left font-semibold">SKU</TableHead>
+            {renderSeparator()}
             <TableHead className="p-2 text-left font-semibold">Name</TableHead>
+            {renderSeparator()}
             {selectedBranch === 'all' ? (
               <>
                 {filteredBranches.map((branch, index) => (
@@ -90,10 +92,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                         <ArrowUpDown className="inline" size={12} />
                       </div>
                     </TableHead>
-                    {index < filteredBranches.length - 1 && renderSeparator()}
+                    {renderSeparator()}
                   </React.Fragment>
                 ))}
-                {renderSeparator()}
                 <TableHead
                   onClick={() => handleSort('total')}
                   className="p-2 text-center font-semibold cursor-pointer"
@@ -123,7 +124,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
             return (
               <TableRow key={item.id} className="border-b hover:bg-gray-50">
                 <TableCell className="p-2">{item.sku}</TableCell>
+                {renderSeparator()}
                 <TableCell className="p-2">{item.name}</TableCell>
+                {renderSeparator()}
                 {selectedBranch === 'all' ? (
                   <>
                     {filteredBranches.map((branch, index) => {
@@ -135,11 +138,10 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
                       return (
                         <React.Fragment key={branch.id}>
                           <TableCell className="p-2 text-center">{stockValue}</TableCell>
-                          {index < filteredBranches.length - 1 && renderSeparator()}
+                          {renderSeparator()}
                         </React.Fragment>
                       );
                     })}
-                    {renderSeparator()}
                     <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
                   </>
                 ) : (
