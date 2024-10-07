@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DatabaseResponse, Branch } from '@/types/types';
+import { DatabaseResponse, Branch, InventoryItem } from '@/types/types';
 import InventoryTable from '@/components/InventoryTable';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,32 @@ const Index = () => {
   const minDate = dates[dates.length - 1].substring(0, 10);
   const maxDate = dates[0].substring(0, 10);
 
+  const filteredItems = data.items.filter(item =>
+    item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalItems = filteredItems.length;
+
+  const calculateTotalQuantity = (): number => {
+    const dateKey = selectedDate.substring(0, 10);
+    const stockData = Object.keys(data.inventory).reduce((acc, key) => {
+      if (key.startsWith(dateKey)) {
+        return data.inventory[key];
+      }
+      return acc;
+    }, [] as InventoryItem[]);
+
+    return stockData.reduce((total, item) => {
+      if (selectedBranch === 'all' || item.branch_id.toString() === selectedBranch) {
+        return total + item.stock;
+      }
+      return total;
+    }, 0);
+  };
+
+  const totalQuantity = calculateTotalQuantity();
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">DragCura Inventory</h1>
@@ -92,6 +118,11 @@ const Index = () => {
             </SelectContent>
           </Select>
         </div>
+      </div>
+      <div className="mb-4 p-4 bg-gray-100 rounded-md">
+        <p className="text-lg font-semibold">
+          Total Items: {totalItems} | Total Quantity: {totalQuantity}
+        </p>
       </div>
       <InventoryTable
         items={data.items}
