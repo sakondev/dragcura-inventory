@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import * as XLSX from 'xlsx';
+import { Loader } from 'lucide-react';
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database2.json');
@@ -68,7 +69,11 @@ const Index = () => {
     }
   };
 
-  if (isLoading) return <div className="text-center p-4">กำลังโหลดข้อมูล...</div>;
+  if (isLoading) return (
+    <div className="flex justify-center items-center h-screen">
+      <Loader className="w-12 h-12 animate-spin text-primary" />
+    </div>
+  );
   if (error) return <div className="text-center p-4 text-red-500">เกิดข้อผิดพลาด: {(error as Error).message}</div>;
   if (!data) return <div className="text-center p-4">ไม่พบข้อมูล</div>;
 
