@@ -54,9 +54,9 @@ const Index = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">DragCura Inventory</h1>
-      <div className="mb-4 flex items-center space-x-4">
+      <div className="mb-4 space-y-4">
         <div>
-          <label htmlFor="dateFilter" className="mr-2">Select Date:</label>
+          <label htmlFor="dateFilter" className="block mb-2">Select Date:</label>
           <Input
             type="date"
             id="dateFilter"
@@ -64,24 +64,24 @@ const Index = () => {
             onChange={handleDateChange}
             min={minDate}
             max={maxDate}
-            className="w-40 inline-block"
+            className="w-full"
           />
         </div>
         <div>
-          <label htmlFor="searchFilter" className="mr-2">Search:</label>
+          <label htmlFor="searchFilter" className="block mb-2">Search:</label>
           <Input
             type="text"
             id="searchFilter"
             value={searchTerm}
             onChange={handleSearchChange}
             placeholder="Search by SKU or Name"
-            className="w-64 inline-block"
+            className="w-full"
           />
         </div>
         <div>
-          <label htmlFor="branchFilter" className="mr-2">Branch:</label>
+          <label htmlFor="branchFilter" className="block mb-2">Branch:</label>
           <Select onValueChange={handleBranchChange} value={selectedBranch}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select branch" />
             </SelectTrigger>
             <SelectContent>
@@ -92,9 +92,6 @@ const Index = () => {
             </SelectContent>
           </Select>
         </div>
-      </div>
-      <div id="selectedDateTime" className="mb-4 inline-block bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
-        {selectedDate}
       </div>
       <InventoryTable
         items={data.items}
