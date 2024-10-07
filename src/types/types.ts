@@ -7,7 +7,6 @@ export interface Item {
 export interface Branch {
   id: number;
   name: string;
-  onlySKUs?: string[];
 }
 
 export interface InventoryItem {
