@@ -5,6 +5,7 @@ import InventoryTable from '@/components/InventoryTable';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   const response = await fetch('https://sakondev.github.io/drg-inventory/inventory_database.json');
@@ -30,6 +31,25 @@ const Index = () => {
       setSelectedDate(dates[0].substring(0, 10));
     }
   }, [data]);
+
+  const handleCopyTable = () => {
+    const table = document.querySelector('table');
+    if (table) {
+      const rows = Array.from(table.querySelectorAll('tr'));
+      const csvContent = rows.map(row => 
+        Array.from(row.querySelectorAll('th, td'))
+          .map(cell => cell.textContent)
+          .join('\t')
+      ).join('\n');
+
+      navigator.clipboard.writeText(csvContent).then(() => {
+        toast.success(`Copied ${rows.length - 1} rows to clipboard`);
+      }).catch(err => {
+        toast.error('Failed to copy table');
+        console.error('Failed to copy table: ', err);
+      });
+    }
+  };
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>An error occurred: {(error as Error).message}</div>;
@@ -124,6 +144,9 @@ const Index = () => {
           Total Items: {totalItems} | Total Quantity: {totalQuantity}
         </p>
       </div>
+      <div className="mb-4 flex justify-end">
+        <Button onClick={handleCopyTable}>Copy Table</Button>
+      </div>
       <InventoryTable
         items={data.items}
         branches={data.branches}
@@ -132,7 +155,7 @@ const Index = () => {
         searchTerm={searchTerm}
         selectedBranch={selectedBranch}
       />
-      <div className="mt-4">
+      <div className="mt-4 flex space-x-2">
         <Button onClick={() => window.print()}>Print</Button>
       </div>
     </div>
