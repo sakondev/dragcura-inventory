@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
 import { Item, Branch, InventoryData } from '@/types/types';
 import { ArrowUpDown } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
 
 interface InventoryTableProps {
   items: Item[];
@@ -63,32 +64,42 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
     }
   };
 
+  const renderSeparator = () => (
+    <TableCell className="p-0 w-[1px]">
+      <Separator orientation="vertical" className="h-full mx-auto" />
+    </TableCell>
+  );
+
   return (
     <div className="overflow-x-auto">
       <Table className="w-full border-collapse">
         <TableHeader>
           <TableRow className="bg-gray-100">
             <TableHead className="p-2 text-left font-semibold">SKU</TableHead>
+            {renderSeparator()}
             <TableHead className="p-2 text-left font-semibold">Name</TableHead>
+            {renderSeparator()}
             {selectedBranch === 'all' ? (
               <>
-                {filteredBranches.map((branch) => (
-                  <TableHead
-                    key={branch.id}
-                    onClick={() => handleSort(branch.id.toString())}
-                    className="p-2 text-left font-semibold cursor-pointer"
-                  >
-                    <div className="flex items-center">
-                      <span className="mr-1">{branch.name}</span>
-                      <ArrowUpDown className="inline" size={12} />
-                    </div>
-                  </TableHead>
+                {filteredBranches.map((branch, index) => (
+                  <React.Fragment key={branch.id}>
+                    <TableHead
+                      onClick={() => handleSort(branch.id.toString())}
+                      className="p-2 text-center font-semibold cursor-pointer"
+                    >
+                      <div className="flex items-center justify-center">
+                        <span className="mr-1">{branch.name}</span>
+                        <ArrowUpDown className="inline" size={12} />
+                      </div>
+                    </TableHead>
+                    {renderSeparator()}
+                  </React.Fragment>
                 ))}
                 <TableHead
                   onClick={() => handleSort('total')}
-                  className="p-2 text-left font-semibold cursor-pointer"
+                  className="p-2 text-center font-semibold cursor-pointer"
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-center justify-center">
                     <span className="mr-1">Total</span>
                     <ArrowUpDown className="inline" size={12} />
                   </div>
@@ -97,9 +108,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
             ) : (
               <TableHead
                 onClick={() => handleSort(selectedBranch)}
-                className="p-2 text-left font-semibold cursor-pointer"
+                className="p-2 text-center font-semibold cursor-pointer"
               >
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <span className="mr-1">Qty</span>
                   <ArrowUpDown className="inline" size={12} />
                 </div>
@@ -113,21 +124,28 @@ const InventoryTable: React.FC<InventoryTableProps> = ({ items, branches, invent
             return (
               <TableRow key={item.id} className="border-b hover:bg-gray-50">
                 <TableCell className="p-2">{item.sku}</TableCell>
+                {renderSeparator()}
                 <TableCell className="p-2">{item.name}</TableCell>
+                {renderSeparator()}
                 {selectedBranch === 'all' ? (
                   <>
-                    {filteredBranches.map((branch) => {
+                    {filteredBranches.map((branch, index) => {
                       const stock = stockData.find(
                         (inv) => inv.item_id === item.id && inv.branch_id === branch.id
                       );
                       const stockValue = stock ? stock.stock : 0;
                       total += stockValue;
-                      return <TableCell key={branch.id} className="p-2 text-right">{stockValue}</TableCell>;
+                      return (
+                        <React.Fragment key={branch.id}>
+                          <TableCell className="p-2 text-center">{stockValue}</TableCell>
+                          {renderSeparator()}
+                        </React.Fragment>
+                      );
                     })}
-                    <TableCell className="p-2 text-right font-semibold">{total}</TableCell>
+                    <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
                   </>
                 ) : (
-                  <TableCell className="p-2 text-right">
+                  <TableCell className="p-2 text-center">
                     {stockData.find(
                       (inv) => inv.item_id === item.id && inv.branch_id === parseInt(selectedBranch)
                     )?.stock || 0}
