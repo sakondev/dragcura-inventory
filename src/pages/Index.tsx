@@ -12,13 +12,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-<<<<<<< HEAD
-import * as XLSX from "xlsx";
 import NavHeader from "@/components/NavHeader";
-=======
-import * as XLSX from 'xlsx';
-import { Loader } from 'lucide-react';
->>>>>>> 04aecc59423aea1955e7378745862edab9cb3af4
+import * as XLSX from "xlsx";
+import { Loader } from "lucide-react";
 
 const fetchInventoryData = async (): Promise<DatabaseResponse> => {
   const response = await fetch(
@@ -89,12 +85,18 @@ const Index = () => {
     }
   };
 
-  if (isLoading) return (
-    <div className="flex justify-center items-center h-screen">
-      <Loader className="w-12 h-12 animate-spin text-primary" />
-    </div>
-  );
-  if (error) return <div className="text-center p-4 text-red-500">เกิดข้อผิดพลาด: {(error as Error).message}</div>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    );
+  if (error)
+    return (
+      <div className="text-center p-4 text-red-500">
+        เกิดข้อผิดพลาด: {(error as Error).message}
+      </div>
+    );
   if (!data) return <div className="text-center p-4">ไม่พบข้อมูล</div>;
 
   console.log("Data loaded:", data); // เพิ่ม log เพื่อตรวจสอบข้อมูล
