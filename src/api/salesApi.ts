@@ -1,5 +1,5 @@
 import axios from "axios";
-import {
+import type {
   SalesResponse,
   BranchesResponse,
   SaleDatesResponse,
