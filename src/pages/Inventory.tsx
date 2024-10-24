@@ -12,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import NavHeader from "@/components/NavHeader";
 import * as XLSX from "xlsx";
 import { Loader } from "lucide-react";
 
@@ -157,80 +156,77 @@ const Index = () => {
   const totalQuantity = calculateTotalQuantity(filteredItems);
 
   return (
-    <div>
-      <NavHeader />
-      <div className="container mx-auto p-4">
-        <div className="mb-4 flex flex-wrap gap-4">
-          <div className="flex-1 min-w-[200px]">
-            <label htmlFor="dateFilter" className="block mb-2">
-              Select Date:
-            </label>
-            <Input
-              type="date"
-              id="dateFilter"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              min={minDate}
-              max={maxDate}
-              className="w-full"
-            />
-          </div>
-          <div className="flex-1 min-w-[200px]">
-            <label htmlFor="searchFilter" className="block mb-2">
-              Search:
-            </label>
-            <Input
-              type="text"
-              id="searchFilter"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by SKU or Name"
-              className="w-full"
-            />
-          </div>
-          <div className="flex-1 min-w-[200px]">
-            <label htmlFor="branchFilter" className="block mb-2">
-              Branch:
-            </label>
-            <Select onValueChange={handleBranchChange} value={selectedBranch}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select branch" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Branches</SelectItem>
-                {data.branches.map((branch: Branch) => (
-                  <SelectItem key={branch.id} value={branch.id.toString()}>
-                    {branch.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="mb-4 p-4 bg-gray-100 rounded-md">
-          <p className="text-lg font-semibold">
-            Total Items: {totalItems} | Total Quantity: {totalQuantity}
-          </p>
-        </div>
-        <div className="mb-4 flex justify-start space-x-2">
-          <Button onClick={handleCopyTable}>COPY</Button>
-          <Button onClick={handleExportExcel}>EXCEL</Button>
-        </div>
-        {filteredItems.length > 0 ? (
-          <InventoryTable
-            items={filteredItems}
-            branches={data.branches}
-            inventoryData={data.inventory}
-            selectedDate={selectedDate}
-            searchTerm={searchTerm}
-            selectedBranch={selectedBranch}
+    <div className="container mx-auto p-4">
+      <div className="mb-4 flex flex-wrap gap-4">
+        <div className="flex-1 min-w-[200px]">
+          <label htmlFor="dateFilter" className="block mb-2">
+            Select Date:
+          </label>
+          <Input
+            type="date"
+            id="dateFilter"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            min={minDate}
+            max={maxDate}
+            className="w-full"
           />
-        ) : (
-          <div className="text-center p-4">
-            ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
-          </div>
-        )}
+        </div>
+        <div className="flex-1 min-w-[200px]">
+          <label htmlFor="searchFilter" className="block mb-2">
+            Search:
+          </label>
+          <Input
+            type="text"
+            id="searchFilter"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by SKU or Name"
+            className="w-full"
+          />
+        </div>
+        <div className="flex-1 min-w-[200px]">
+          <label htmlFor="branchFilter" className="block mb-2">
+            Branch:
+          </label>
+          <Select onValueChange={handleBranchChange} value={selectedBranch}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select branch" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Branches</SelectItem>
+              {data.branches.map((branch: Branch) => (
+                <SelectItem key={branch.id} value={branch.id.toString()}>
+                  {branch.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
+      <div className="mb-4 p-4 bg-gray-100 rounded-md">
+        <p className="text-lg font-semibold">
+          Total Items: {totalItems} | Total Quantity: {totalQuantity}
+        </p>
+      </div>
+      <div className="mb-4 flex justify-start space-x-2">
+        <Button onClick={handleCopyTable}>COPY</Button>
+        <Button onClick={handleExportExcel}>EXCEL</Button>
+      </div>
+      {filteredItems.length > 0 ? (
+        <InventoryTable
+          items={filteredItems}
+          branches={data.branches}
+          inventoryData={data.inventory}
+          selectedDate={selectedDate}
+          searchTerm={searchTerm}
+          selectedBranch={selectedBranch}
+        />
+      ) : (
+        <div className="text-center p-4">
+          ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
+        </div>
+      )}
     </div>
   );
 };
