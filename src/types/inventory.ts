@@ -11,7 +11,6 @@ export interface InventoryItem {
   item_brand: string;
   item_name: string;
   item_sku: string;
-  item_group: string | null;
   last_updated: string;
   qty: number;
 }

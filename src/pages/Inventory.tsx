@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import InventoryTable from "@/components/InventoryTable";
 import InventoryFilterPanel from "@/components/InventoryFilterPanel";
 import { useInventoryData } from "@/hooks/useInventoryData";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import * as XLSX from "xlsx";
 import DataLoadingIndicator from "@/components/DataLoadingIndicator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { StockDate } from "@/types/inventory";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -15,7 +18,7 @@ const Inventory = () => {
     selectedBranch
   );
 
-  // Set initial date to latest date
+  // Set initial date when stockDates are loaded
   useEffect(() => {
     if (stockDates && stockDates.length > 0 && !selectedDate) {
       const latestDate = stockDates[0].date.split(" ")[0];
@@ -23,36 +26,50 @@ const Inventory = () => {
     }
   }, [stockDates, selectedDate]);
 
+  const handleCopyTable = () => {
+    const table = document.querySelector("table");
+    if (table) {
+      const rows = Array.from(table.querySelectorAll("tr"));
+      const csvContent = rows
+        .map((row) =>
+          Array.from(row.querySelectorAll("th, td"))
+            .map((cell) => cell.textContent)
+            .join("\t")
+        )
+        .join("\n");
+
+      navigator.clipboard
+        .writeText(csvContent)
+        .then(() => {
+          toast.success(`Copied ${rows.length - 1} rows to clipboard`);
+        })
+        .catch((err) => {
+          toast.error("Failed to copy table");
+          console.error("Failed to copy table: ", err);
+        });
+    }
+  };
+
+  const handleExportExcel = () => {
+    const table = document.querySelector("table");
+    if (table) {
+      const wb = XLSX.utils.table_to_book(table);
+      const fileName = `DragCura_Inventory_${selectedDate}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      toast.success(`Exported to ${fileName}`);
+    } else {
+      toast.error("Failed to export table");
+    }
+  };
+
   if (isLoading) {
     return <DataLoadingIndicator />;
   }
 
-  const totalItems = inventory.length;
-  const totalQty = inventory.reduce((sum, item) => sum + item.qty, 0);
-
   return (
     <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Items</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{totalItems}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Quantity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{totalQty}</p>
-          </CardContent>
-        </Card>
-      </div>
-      
       <InventoryFilterPanel
-        branches={branches}
+        branches={branches.map(b => b.name)}
         stockDates={stockDates}
         selectedDate={selectedDate}
         selectedBranch={selectedBranch}
@@ -61,7 +78,10 @@ const Inventory = () => {
         onBranchChange={setSelectedBranch}
         onSearchChange={setSearchTerm}
       />
-
+      <div className="mb-4 flex justify-start space-x-2">
+        <Button onClick={handleCopyTable}>COPY</Button>
+        <Button onClick={handleExportExcel}>EXCEL</Button>
+      </div>
       {inventory && inventory.length > 0 ? (
         <InventoryTable
           inventory={inventory}

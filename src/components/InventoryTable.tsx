@@ -19,6 +19,7 @@ interface InventoryTableProps {
 
 const InventoryTable: React.FC<InventoryTableProps> = ({
   inventory,
+  branches,
   searchTerm,
   selectedBranch,
 }) => {
@@ -28,7 +29,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     </TableCell>
   );
 
-  const filteredInventory = inventory.filter(
+  const uniqueInventory = Array.from(
+    new Map(inventory.map(item => [item.item_sku, item])).values()
+  );
+
+  const filteredInventory = uniqueInventory.filter(
     (item) =>
       searchTerm === "" ||
       item.item_sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,27 +49,63 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             {renderSeparator()}
             <TableHead className="p-2">Name</TableHead>
             {renderSeparator()}
-            <TableHead className="p-2">Brand</TableHead>
-            {renderSeparator()}
-            <TableHead className="p-2">Item Group</TableHead>
-            {renderSeparator()}
-            <TableHead className="p-2 text-center">Qty</TableHead>
+            {selectedBranch === "all" ? (
+              branches
+                .filter(branch => branch.id >= 1 && branch.id <= 12)
+                .map((branch) => (
+                  <React.Fragment key={branch.id}>
+                    <TableHead className="p-2 text-center">{branch.name}</TableHead>
+                    {renderSeparator()}
+                  </React.Fragment>
+                ))
+            ) : (
+              <>
+                <TableHead className="p-2 text-center">Qty</TableHead>
+                {renderSeparator()}
+              </>
+            )}
+            <TableHead className="p-2 text-center">Total</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredInventory.map((item) => (
-            <TableRow key={item.item_sku} className="border-b hover:bg-gray-50">
-              <TableCell className="p-2">{item.item_sku}</TableCell>
-              {renderSeparator()}
-              <TableCell className="p-2">{item.item_name}</TableCell>
-              {renderSeparator()}
-              <TableCell className="p-2">{item.item_brand}</TableCell>
-              {renderSeparator()}
-              <TableCell className="p-2">{item.item_group || '-'}</TableCell>
-              {renderSeparator()}
-              <TableCell className="p-2 text-center">{item.qty}</TableCell>
-            </TableRow>
-          ))}
+          {filteredInventory.map((item) => {
+            const total = selectedBranch === "all"
+              ? inventory
+                  .filter(inv => inv.item_sku === item.item_sku)
+                  .reduce((sum, inv) => sum + inv.qty, 0)
+              : item.qty;
+
+            return (
+              <TableRow key={item.item_sku} className="border-b hover:bg-gray-50">
+                <TableCell className="p-2">{item.item_sku}</TableCell>
+                {renderSeparator()}
+                <TableCell className="p-2">{item.item_name}</TableCell>
+                {renderSeparator()}
+                {selectedBranch === "all" ? (
+                  branches
+                    .filter(branch => branch.id >= 1 && branch.id <= 12)
+                    .map((branch) => (
+                      <React.Fragment key={branch.id}>
+                        <TableCell className="p-2 text-center">
+                          {inventory.find(
+                            (inv) =>
+                              inv.item_sku === item.item_sku &&
+                              inv.branch_name === branch.name
+                          )?.qty ?? 0}
+                        </TableCell>
+                        {renderSeparator()}
+                      </React.Fragment>
+                    ))
+                ) : (
+                  <>
+                    <TableCell className="p-2 text-center">{item.qty}</TableCell>
+                    {renderSeparator()}
+                  </>
+                )}
+                <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>
