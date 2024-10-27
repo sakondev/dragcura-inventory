@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import InventoryTable from "@/components/InventoryTable";
 import InventoryFilterPanel from "@/components/InventoryFilterPanel";
-import { useInventoryData } from "@/hooks/useInventoryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import InventorySummary from "@/components/InventorySummary";
+import InventoryTableSkeleton from "@/components/InventoryTableSkeleton";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -27,7 +27,7 @@ const Inventory = () => {
           ? currDate
           : prev;
       }, new Date(stockDates[0].date.split(" ")[0]));
-      setSelectedDate(closestDate.toISOString().split("T")[0]); // Set the date in YYYY-MM-DD format
+      setSelectedDate(closestDate.toISOString().split("T")[0]);
     }
   }, [stockDates, selectedDate]);
 
@@ -67,10 +67,12 @@ const Inventory = () => {
     }
   };
 
+  const isInitialLoading = !branches.length || !stockDates.length;
+
   return (
     <div className="container mx-auto p-4">
       <InventoryFilterPanel
-        branches={branches}
+        branches={branches.filter((b) => b.id >= 1 && b.id <= 12).map((b) => b.name)}
         stockDates={stockDates}
         selectedDate={selectedDate}
         selectedBranch={selectedBranch}
@@ -79,24 +81,30 @@ const Inventory = () => {
         onBranchChange={setSelectedBranch}
         onSearchChange={setSearchTerm}
       />
-      {inventory && inventory.length > 0 && (
-        <InventorySummary inventory={inventory} />
-      )}
-      <div className="mb-4 flex justify-start space-x-2">
-        <Button onClick={handleCopyTable}>COPY</Button>
-        <Button onClick={handleExportExcel}>EXCEL</Button>
-      </div>
-      {inventory && inventory.length > 0 ? (
-        <InventoryTable
-          inventory={inventory}
-          branches={branches}
-          searchTerm={searchTerm}
-          selectedBranch={selectedBranch}
-        />
+      {isInitialLoading ? (
+        <InventoryTableSkeleton />
       ) : (
-        <div className="text-center p-4">
-          ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
-        </div>
+        <>
+          {inventory && inventory.length > 0 && (
+            <InventorySummary inventory={inventory} />
+          )}
+          <div className="mb-4 flex justify-start space-x-2">
+            <Button onClick={handleCopyTable}>COPY</Button>
+            <Button onClick={handleExportExcel}>EXCEL</Button>
+          </div>
+          {inventory && inventory.length > 0 ? (
+            <InventoryTable
+              inventory={inventory}
+              branches={branches}
+              searchTerm={searchTerm}
+              selectedBranch={selectedBranch}
+            />
+          ) : (
+            <div className="text-center p-4 text-gray-500">
+              ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
+            </div>
+          )}
+        </>
       )}
     </div>
   );
