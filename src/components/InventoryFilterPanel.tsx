@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Branch, StockDate } from "@/types/inventory";
 
@@ -41,6 +41,22 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   onSearchChange,
 }) => {
   const availableDates = stockDates.map(d => new Date(d.date));
+  
+  // Find the closest date to today from available dates
+  const findClosestDate = () => {
+    const today = new Date();
+    return availableDates.reduce((prev, curr) => {
+      return Math.abs(curr.getTime() - today.getTime()) < Math.abs(prev.getTime() - today.getTime()) ? curr : prev;
+    });
+  };
+
+  // Set closest date when dates are loaded and no date is selected
+  React.useEffect(() => {
+    if (stockDates.length > 0 && !selectedDate) {
+      const closestDate = findClosestDate();
+      onDateChange(format(closestDate, 'yyyy-MM-dd'));
+    }
+  }, [stockDates, selectedDate, onDateChange]);
 
   return (
     <div className="mb-4 flex flex-wrap gap-4">
