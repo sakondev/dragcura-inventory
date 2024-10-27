@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -8,6 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 import type { Branch, InventoryItem } from "@/types/inventory";
 
 interface InventoryTableProps {
@@ -17,12 +19,22 @@ interface InventoryTableProps {
   selectedBranch: string;
 }
 
+type SortConfig = {
+  key: keyof InventoryItem | null;
+  direction: 'asc' | 'desc';
+};
+
 const InventoryTable: React.FC<InventoryTableProps> = ({
   inventory,
   branches,
   searchTerm,
   selectedBranch,
 }) => {
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
+    key: null,
+    direction: 'asc'
+  });
+
   const renderSeparator = () => (
     <TableCell className="p-0 w-[1px]">
       <Separator orientation="vertical" className="h-full mx-auto" />
@@ -40,18 +52,56 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
       item.item_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const sortedInventory = React.useMemo(() => {
+    if (!sortConfig.key) return filteredInventory;
+
+    return [...filteredInventory].sort((a, b) => {
+      if (a[sortConfig.key!] < b[sortConfig.key!]) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (a[sortConfig.key!] > b[sortConfig.key!]) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [filteredInventory, sortConfig]);
+
+  const handleSort = (key: keyof InventoryItem) => {
+    setSortConfig(current => ({
+      key,
+      direction: current.key === key && current.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const renderSortButton = (label: string, key: keyof InventoryItem) => (
+    <Button
+      variant="ghost"
+      onClick={() => handleSort(key)}
+      className="h-8 flex items-center gap-1 px-2 py-1"
+    >
+      {label}
+      <ArrowUpDown className="h-4 w-4" />
+    </Button>
+  );
+
   return (
     <div className="overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-100">
-            <TableHead className="p-2">SKU</TableHead>
+            <TableHead className="p-2">
+              {renderSortButton('SKU', 'item_sku')}
+            </TableHead>
             {renderSeparator()}
-            <TableHead className="p-2">Name</TableHead>
+            <TableHead className="p-2">
+              {renderSortButton('Name', 'item_name')}
+            </TableHead>
             {renderSeparator()}
             {selectedBranch !== "all" && (
               <>
-                <TableHead className="p-2">Brand</TableHead>
+                <TableHead className="p-2">
+                  {renderSortButton('Brand', 'item_brand')}
+                </TableHead>
                 {renderSeparator()}
               </>
             )}
@@ -66,7 +116,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 ))
             ) : (
               <>
-                <TableHead className="p-2 text-center">Qty</TableHead>
+                <TableHead className="p-2 text-center">
+                  {renderSortButton('Qty', 'qty')}
+                </TableHead>
                 {renderSeparator()}
               </>
             )}
@@ -76,7 +128,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredInventory.map((item) => {
+          {sortedInventory.map((item) => {
             const total = selectedBranch === "all"
               ? inventory
                   .filter(inv => inv.item_sku === item.item_sku)
