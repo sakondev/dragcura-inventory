@@ -5,7 +5,7 @@ import { useInventoryData } from "@/hooks/useInventoryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
-import DataLoadingIndicator from "@/components/DataLoadingIndicator";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import InventorySummary from "@/components/InventorySummary";
 
 const Inventory = () => {
@@ -21,8 +21,15 @@ const Inventory = () => {
   // Set initial date when stockDates are loaded
   useEffect(() => {
     if (stockDates && stockDates.length > 0 && !selectedDate) {
-      const latestDate = stockDates[0].date.split(" ")[0];
-      setSelectedDate(latestDate);
+      const today = new Date();
+      const closestDate = stockDates.reduce((prev, curr) => {
+        const currDate = new Date(curr.date.split(" ")[0]);
+        return Math.abs(currDate.getTime() - today.getTime()) <
+          Math.abs(prev.getTime() - today.getTime())
+          ? currDate
+          : prev;
+      }, new Date(stockDates[0].date.split(" ")[0]));
+      setSelectedDate(closestDate.toISOString().split("T")[0]); // Set the date in YYYY-MM-DD format
     }
   }, [stockDates, selectedDate]);
 
@@ -63,7 +70,7 @@ const Inventory = () => {
   };
 
   if (isLoading) {
-    return <DataLoadingIndicator />;
+    return <LoadingSpinner />;
   }
 
   return (
