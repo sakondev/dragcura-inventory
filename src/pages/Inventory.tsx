@@ -73,7 +73,7 @@ const Inventory = () => {
   return (
     <div className="container mx-auto p-4">
       <InventoryFilterPanel
-        branches={branches.filter((b) => b.id >= 1 && b.id <= 12).map((b) => b.name)}
+        branches={branches.filter((b) => b.id >= 1 && b.id <= 12)}
         stockDates={stockDates}
         selectedDate={selectedDate}
         selectedBranch={selectedBranch}

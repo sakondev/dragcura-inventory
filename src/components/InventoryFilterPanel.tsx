@@ -41,12 +41,12 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   onSearchChange,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const availableDates = stockDates.map(d => new Date(d.date));
-  
+  const availableDates = stockDates.map((d) => new Date(d.date));
+
   // Get the latest date from available dates
   const getLatestDate = () => {
     if (availableDates.length === 0) return null;
-    return new Date(Math.max(...availableDates.map(date => date.getTime())));
+    return new Date(Math.max(...availableDates.map((date) => date.getTime())));
   };
 
   // Set latest date when dates are loaded and no date is selected
@@ -54,7 +54,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
     if (stockDates.length > 0 && !selectedDate) {
       const latestDate = getLatestDate();
       if (latestDate) {
-        onDateChange(format(latestDate, 'yyyy-MM-dd'));
+        onDateChange(format(latestDate, "yyyy-MM-dd"));
       }
     }
   }, [stockDates, selectedDate, onDateChange]);
@@ -116,12 +116,10 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Branches</SelectItem>
-            {branches
-              .filter(branch => branch.id >= 1 && branch.id <= 12)
-              .map((branch) => (
-                <SelectItem key={branch.id} value={branch.name}>
-                  {branch.name}
-                </SelectItem>
+            {branches.map((branch) => (
+              <SelectItem key={branch.id} value={branch.name}>
+                {branch.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
