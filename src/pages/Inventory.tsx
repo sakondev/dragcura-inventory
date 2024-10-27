@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import InventorySummary from "@/components/InventorySummary";
-import InventoryTableSkeleton from "@/components/InventoryTableSkeleton";
 import { useInventoryData } from "@/hooks/useInventoryData";
 
 const Inventory = () => {
@@ -74,7 +73,7 @@ const Inventory = () => {
     }
   };
 
-  const isInitialLoading = !branches.length || !stockDates.length;
+  // const isInitialLoading = !branches.length || !stockDates.length;
 
   return (
     <div className="container mx-auto p-4">
@@ -89,7 +88,7 @@ const Inventory = () => {
         onSearchChange={setSearchTerm}
       />
       {inventory.length === 0 ? (
-        <InventoryTableSkeleton />
+        <div>No inventory available</div>
       ) : (
         <>
           <InventorySummary filteredInventory={filteredInventory} />
