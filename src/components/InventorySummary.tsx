@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { InventoryItem } from "@/types/inventory";
 
 interface InventorySummaryProps {
@@ -11,23 +10,10 @@ const InventorySummary: React.FC<InventorySummaryProps> = ({ inventory }) => {
   const totalQuantity = inventory.reduce((sum, item) => sum + item.qty, 0);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Total SKUs</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{totalSKUs.toLocaleString()}</div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Total Quantity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{totalQuantity.toLocaleString()}</div>
-        </CardContent>
-      </Card>
+    <div className="mb-4 p-4 bg-gray-100 rounded-md">
+      <p className="text-lg font-semibold">
+        Total Items: {totalSKUs.toLocaleString()} | Total Quantity: {totalQuantity.toLocaleString()}
+      </p>
     </div>
   );
 };
