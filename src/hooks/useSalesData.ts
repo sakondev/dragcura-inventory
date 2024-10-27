@@ -7,13 +7,19 @@ export const useSalesData = (dateRange: DateRange | undefined, selectedBranch: s
   const { data: branches } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
-    staleTime: Infinity
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false
   });
 
   const { data: saleDates } = useQuery({
     queryKey: ["saleDates"],
     queryFn: fetchSaleDates,
-    staleTime: Infinity
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false
   });
 
   const { data: items, error } = useQuery({
@@ -27,7 +33,11 @@ export const useSalesData = (dateRange: DateRange | undefined, selectedBranch: s
       );
     },
     enabled: !!dateRange?.from && !!dateRange?.to,
-    staleTime: Infinity
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    placeholderData: (previousData) => previousData
   });
 
   return {

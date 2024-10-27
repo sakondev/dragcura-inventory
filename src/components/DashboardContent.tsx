@@ -4,10 +4,8 @@ import DashboardStats from "./DashboardStats";
 import SalesChart from "./SalesChart";
 import SalesTable from "./SalesTable";
 import { SaleItem, Branch } from "@/types/sales";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardContentProps {
-  isLoading: boolean;
   selectedBranch: string;
   chartType: "all" | "offline" | "online";
   setChartType: (type: "all" | "offline" | "online") => void;
@@ -27,7 +25,6 @@ interface DashboardContentProps {
 }
 
 const DashboardContent: React.FC<DashboardContentProps> = ({
-  isLoading,
   selectedBranch,
   chartType,
   setChartType,
@@ -39,30 +36,6 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   productChartData,
   tableData,
 }) => {
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-6 rounded-lg border">
-              <Skeleton className="h-4 w-24 mb-4" />
-              <Skeleton className="h-8 w-32" />
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="h-96">
-            <Skeleton className="w-full h-full" />
-          </div>
-          <div className="h-96">
-            <Skeleton className="w-full h-full" />
-          </div>
-        </div>
-        <Skeleton className="w-full h-96" />
-      </div>
-    );
-  }
-
   return (
     <>
       <DashboardStats

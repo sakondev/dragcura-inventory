@@ -146,7 +146,6 @@ const Dashboard: React.FC = () => {
       />
       {items?.data && (
         <DashboardContent
-          isLoading={false}
           selectedBranch={selectedBranch}
           chartType={chartType}
           setChartType={setChartType}
