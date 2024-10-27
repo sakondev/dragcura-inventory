@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import DataLoadingIndicator from "@/components/DataLoadingIndicator";
+import type { StockDate } from "@/types/inventory";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -19,7 +20,7 @@ const Inventory = () => {
 
   // Set initial date when stockDates are loaded
   useEffect(() => {
-    if (stockDates?.length > 0 && !selectedDate) {
+    if (stockDates && stockDates.length > 0 && !selectedDate) {
       const latestDate = stockDates[0].date.split(" ")[0];
       setSelectedDate(latestDate);
     }

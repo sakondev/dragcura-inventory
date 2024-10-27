@@ -1,5 +1,9 @@
 import axios from "axios";
-import type { BranchesResponse, InventoryResponse, StockDatesResponse } from "@/types/inventory";
+import type {
+  BranchesResponse,
+  InventoryResponse,
+  StockDatesResponse,
+} from "@/types/inventory";
 
 const BASE_URL = "http://127.0.0.1:5052";
 
@@ -17,10 +21,10 @@ export const fetchInventory = async (date: string, branch?: string) => {
     params.append('branch', branch);
   }
   const response = await axios.get<InventoryResponse>(`${BASE_URL}/inventory?${params}`);
-  return response;
+  return response.data;
 };
 
 export const fetchStockDates = async () => {
   const response = await axios.get<StockDatesResponse>(`${BASE_URL}/stock_dates`);
-  return response;
+  return response.data;
 };
