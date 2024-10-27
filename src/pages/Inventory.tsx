@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import DataLoadingIndicator from "@/components/DataLoadingIndicator";
-import type { StockDate } from "@/types/inventory";
+import InventorySummary from "@/components/InventorySummary";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -69,7 +69,7 @@ const Inventory = () => {
   return (
     <div className="container mx-auto p-4">
       <InventoryFilterPanel
-        branches={branches.map(b => b.name)}
+        branches={branches}
         stockDates={stockDates}
         selectedDate={selectedDate}
         selectedBranch={selectedBranch}
@@ -78,6 +78,9 @@ const Inventory = () => {
         onBranchChange={setSelectedBranch}
         onSearchChange={setSearchTerm}
       />
+      {inventory && inventory.length > 0 && (
+        <InventorySummary inventory={inventory} />
+      )}
       <div className="mb-4 flex justify-start space-x-2">
         <Button onClick={handleCopyTable}>COPY</Button>
         <Button onClick={handleExportExcel}>EXCEL</Button>

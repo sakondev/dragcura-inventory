@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchBranches, fetchInventory, fetchStockDates } from "@/api/inventoryApi";
-import type { Branch, InventoryItem, StockDate } from "@/types/inventory";
 
 export const useInventoryData = (selectedDate: string, selectedBranch: string) => {
   const { data: branchesResponse, isLoading: isLoadingBranches } = useQuery({
@@ -21,7 +20,7 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     enabled: !!selectedDate,
   });
 
-  const branches = branchesResponse?.data.filter(branch => branch.id >= 1 && branch.id <= 12) || [];
+  const branches = branchesResponse?.data || [];
   const stockDates = stockDatesResponse?.data || [];
   const inventory = inventoryResponse?.data || [];
 
