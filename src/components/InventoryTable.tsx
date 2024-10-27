@@ -122,7 +122,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
               </>
             )}
             {selectedBranch === "all" && (
-              <TableHead className="p-1 text-center text-sm">Total</TableHead>
+              <TableHead className="p-2 text-center text-sm font-bold">
+                Total
+              </TableHead>
             )}
           </TableRow>
         </TableHeader>

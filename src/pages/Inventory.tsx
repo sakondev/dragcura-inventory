@@ -101,9 +101,7 @@ const Inventory = () => {
               selectedBranch={selectedBranch}
             />
           ) : (
-            <div className="text-center p-4 text-gray-500">
-              ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
-            </div>
+            <div className="text-center p-4 text-gray-500"></div>
           )}
         </>
       )}
