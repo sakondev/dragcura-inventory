@@ -45,19 +45,28 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   
   // Find the closest date to today from available dates
   const findClosestDate = () => {
+    if (availableDates.length === 0) return null;
+    
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+    
     return availableDates.reduce((closest, current) => {
+      if (!closest) return current;
+      
       const closestDiff = Math.abs(differenceInDays(closest, today));
       const currentDiff = Math.abs(differenceInDays(current, today));
+      
       return currentDiff < closestDiff ? current : closest;
-    });
+    }, availableDates[0]);
   };
 
   // Set closest date when dates are loaded and no date is selected
   React.useEffect(() => {
     if (stockDates.length > 0 && !selectedDate) {
       const closestDate = findClosestDate();
-      onDateChange(format(closestDate, 'yyyy-MM-dd'));
+      if (closestDate) {
+        onDateChange(format(closestDate, 'yyyy-MM-dd'));
+      }
     }
   }, [stockDates, selectedDate, onDateChange]);
 
