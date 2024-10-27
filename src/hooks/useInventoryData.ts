@@ -5,19 +5,27 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
   const { data: branchesResponse, isLoading: isLoadingBranches } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
-    staleTime: Infinity, // Branches rarely change
+    staleTime: Infinity, // Branches data never goes stale
+    cacheTime: Infinity, // Keep branches data cached forever
+    refetchOnWindowFocus: false, // Don't refetch when window regains focus
   });
 
   const { data: stockDatesResponse, isLoading: isLoadingDates } = useQuery({
     queryKey: ["stockDates"],
     queryFn: fetchStockDates,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime: 1000 * 60 * 60, // Consider data fresh for 1 hour
+    cacheTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
+    refetchOnWindowFocus: false,
   });
 
   const { data: inventoryResponse, isLoading: isLoadingInventory } = useQuery({
     queryKey: ["inventory", selectedDate, selectedBranch],
     queryFn: () => fetchInventory(selectedDate, selectedBranch),
     enabled: !!selectedDate,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    cacheTime: 1000 * 60 * 30, // Cache for 30 minutes
+    refetchOnWindowFocus: false,
+    keepPreviousData: true, // Keep showing previous data while fetching new data
   });
 
   const branches = branchesResponse?.data || [];
