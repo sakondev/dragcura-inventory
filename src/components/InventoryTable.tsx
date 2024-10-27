@@ -27,6 +27,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
 }) => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [sortBranch, setSortBranch] = useState<string | null>(null);
+  const [sortTotal, setSortTotal] = useState<boolean>(false);
 
   const renderSeparator = () => (
     <TableCell className="p-0 w-[1px]">
@@ -46,6 +47,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   );
 
   const handleSort = (branchName: string) => {
+    setSortTotal(false);
     if (sortBranch === branchName) {
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
@@ -54,7 +56,23 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     }
   };
 
+  const handleSortTotal = () => {
+    setSortTotal(true);
+    setSortBranch(null);
+    setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
   const sortedInventory = [...filteredInventory].sort((a, b) => {
+    if (sortTotal) {
+      const totalA = inventory
+        .filter((inv) => inv.item_sku === a.item_sku)
+        .reduce((sum, inv) => sum + inv.qty, 0);
+      const totalB = inventory
+        .filter((inv) => inv.item_sku === b.item_sku)
+        .reduce((sum, inv) => sum + inv.qty, 0);
+      return sortDirection === "asc" ? totalA - totalB : totalB - totalA;
+    }
+
     if (!sortBranch) return 0;
 
     const getQty = (item: InventoryItem, branch: string) => {
@@ -122,8 +140,15 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
               </>
             )}
             {selectedBranch === "all" && (
-              <TableHead className="p-2 text-center text-sm font-bold">
-                Total
+              <TableHead className="p-2 text-center">
+                <Button
+                  variant="ghost"
+                  onClick={handleSortTotal}
+                  className="font-semibold text-sm"
+                >
+                  Total
+                  <ArrowUpDown className="ml-1 h-2 w-2" />
+                </Button>
               </TableHead>
             )}
           </TableRow>
