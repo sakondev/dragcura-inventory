@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Branch, StockDate } from "@/types/inventory";
 
@@ -40,6 +40,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   onBranchChange,
   onSearchChange,
 }) => {
+  const [open, setOpen] = React.useState(false);
   const availableDates = stockDates.map(d => new Date(d.date));
   
   // Find the closest date to today from available dates
@@ -62,7 +63,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
     <div className="mb-4 flex flex-wrap gap-4">
       <div className="flex-1 min-w-[200px]">
         <label className="block mb-2">Select Date:</label>
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant={"outline"}
@@ -79,7 +80,12 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
             <Calendar
               mode="single"
               selected={selectedDate ? new Date(selectedDate) : undefined}
-              onSelect={(date) => date && onDateChange(format(date, "yyyy-MM-dd"))}
+              onSelect={(date) => {
+                if (date) {
+                  onDateChange(format(date, "yyyy-MM-dd"));
+                  setOpen(false);
+                }
+              }}
               disabled={(date) =>
                 !availableDates.some(
                   (d) =>
