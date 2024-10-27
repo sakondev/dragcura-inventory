@@ -3,28 +3,35 @@ import type {
   BranchesResponse,
   InventoryResponse,
   StockDatesResponse,
+  ItemsResponse
 } from "@/types/inventory";
 
 const BASE_URL = "http://127.0.0.1:5052";
 
 export const fetchBranches = async () => {
-  const response = await axios.get<BranchesResponse>(`${BASE_URL}/branches`);
-  return response.data;
+  const response = await axios.get<Branch[]>(`${BASE_URL}/branches`);
+  return { data: response.data };
 };
 
-export const fetchInventory = async (date: string, branch?: string) => {
+export const fetchInventory = async (date?: string, branch?: string) => {
+  if (!date) return { data: [] };
+  
   const params = new URLSearchParams();
-  if (date) {
-    params.append('date', date);
-  }
+  params.append('date', date);
   if (branch && branch !== 'all') {
-    params.append('branch', branch);
+    params.append('branch', branch.toLowerCase());
   }
-  const response = await axios.get<InventoryResponse>(`${BASE_URL}/inventory?${params}`);
-  return response.data;
+  
+  const response = await axios.get<InventoryItem[]>(`${BASE_URL}/inventory?${params}`);
+  return { data: response.data };
 };
 
 export const fetchStockDates = async () => {
-  const response = await axios.get<StockDatesResponse>(`${BASE_URL}/stock_dates`);
-  return response.data;
+  const response = await axios.get<StockDate[]>(`${BASE_URL}/stock_dates`);
+  return { data: response.data };
+};
+
+export const fetchItems = async () => {
+  const response = await axios.get<Item[]>(`${BASE_URL}/items`);
+  return { data: response.data };
 };

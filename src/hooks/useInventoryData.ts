@@ -6,11 +6,13 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
   const { data: branchesResponse, isLoading: isLoadingBranches } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
+    staleTime: Infinity, // Branches rarely change
   });
 
   const { data: stockDatesResponse, isLoading: isLoadingDates } = useQuery({
     queryKey: ["stockDates"],
     queryFn: fetchStockDates,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
   const { data: inventoryResponse, isLoading: isLoadingInventory } = useQuery({
@@ -27,6 +29,6 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     branches,
     stockDates,
     inventory,
-    isLoading: isLoadingBranches || isLoadingDates || isLoadingInventory,
+    isLoading: isLoadingBranches || isLoadingDates || (!!selectedDate && isLoadingInventory),
   };
 };

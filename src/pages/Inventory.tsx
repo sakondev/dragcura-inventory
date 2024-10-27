@@ -69,7 +69,7 @@ const Inventory = () => {
   return (
     <div className="container mx-auto p-4">
       <InventoryFilterPanel
-        branches={branches}
+        branches={branches.map(b => b.name)}
         stockDates={stockDates}
         selectedDate={selectedDate}
         selectedBranch={selectedBranch}

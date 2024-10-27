@@ -20,6 +20,14 @@ export interface StockDate {
   id: number;
 }
 
+export interface Item {
+  brand: string;
+  category: string;
+  item_group: string | null;
+  name: string;
+  sku: string;
+}
+
 export interface BranchesResponse {
   data: Branch[];
 }
@@ -30,4 +38,8 @@ export interface InventoryResponse {
 
 export interface StockDatesResponse {
   data: StockDate[];
+}
+
+export interface ItemsResponse {
+  data: Item[];
 }
