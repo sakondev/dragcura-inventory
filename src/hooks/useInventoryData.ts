@@ -6,7 +6,7 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     queryKey: ["branches"],
     queryFn: fetchBranches,
     staleTime: Infinity, // Branches data never goes stale
-    cacheTime: Infinity, // Keep branches data cached forever
+    gcTime: Infinity, // Keep branches data cached forever
     refetchOnWindowFocus: false, // Don't refetch when window regains focus
   });
 
@@ -14,7 +14,7 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     queryKey: ["stockDates"],
     queryFn: fetchStockDates,
     staleTime: 1000 * 60 * 60, // Consider data fresh for 1 hour
-    cacheTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
+    gcTime: 1000 * 60 * 60 * 24, // Cache for 24 hours
     refetchOnWindowFocus: false,
   });
 
@@ -23,7 +23,7 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     queryFn: () => fetchInventory(selectedDate, selectedBranch),
     enabled: !!selectedDate,
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-    cacheTime: 1000 * 60 * 30, // Cache for 30 minutes
+    gcTime: 1000 * 60 * 30, // Cache for 30 minutes
     refetchOnWindowFocus: false,
     keepPreviousData: true, // Keep showing previous data while fetching new data
   });
@@ -32,10 +32,15 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
   const stockDates = stockDatesResponse?.data || [];
   const inventory = inventoryResponse?.data || [];
 
+  // Only show loading state when we're loading initial data or inventory
+  const isLoading = (!branchesResponse && isLoadingBranches) || 
+                    (!stockDatesResponse && isLoadingDates) || 
+                    (!!selectedDate && isLoadingInventory && !inventoryResponse);
+
   return {
     branches,
     stockDates,
     inventory,
-    isLoading: isLoadingBranches || isLoadingDates || (!!selectedDate && isLoadingInventory),
+    isLoading,
   };
 };
