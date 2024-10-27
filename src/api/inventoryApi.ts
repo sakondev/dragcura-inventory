@@ -1,5 +1,9 @@
 import axios from "axios";
 import type {
+  Branch,
+  InventoryItem,
+  StockDate,
+  Item,
   BranchesResponse,
   InventoryResponse,
   StockDatesResponse,

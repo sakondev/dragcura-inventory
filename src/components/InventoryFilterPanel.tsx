@@ -7,6 +7,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import type { Branch, StockDate } from "@/types/inventory";
 
 interface InventoryFilterPanelProps {
@@ -30,32 +40,46 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   onBranchChange,
   onSearchChange,
 }) => {
+  const availableDates = stockDates.map(d => new Date(d.date));
+
   return (
     <div className="mb-4 flex flex-wrap gap-4">
       <div className="flex-1 min-w-[200px]">
-        <label htmlFor="dateFilter" className="block mb-2">
-          Select Date:
-        </label>
-        <Select value={selectedDate} onValueChange={onDateChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select date" />
-          </SelectTrigger>
-          <SelectContent>
-            {stockDates.map((date) => (
-              <SelectItem key={date.id} value={date.date.split(" ")[0]}>
-                {date.date.split(" ")[0]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <label className="block mb-2">Select Date:</label>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {selectedDate ? format(new Date(selectedDate), "PPP") : "Pick a date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={selectedDate ? new Date(selectedDate) : undefined}
+              onSelect={(date) => date && onDateChange(format(date, "yyyy-MM-dd"))}
+              disabled={(date) =>
+                !availableDates.some(
+                  (d) =>
+                    d.getFullYear() === date.getFullYear() &&
+                    d.getMonth() === date.getMonth() &&
+                    d.getDate() === date.getDate()
+                )
+              }
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="flex-1 min-w-[200px]">
-        <label htmlFor="searchFilter" className="block mb-2">
-          Search:
-        </label>
+        <label className="block mb-2">Search:</label>
         <Input
           type="text"
-          id="searchFilter"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by SKU or Name"
@@ -63,19 +87,19 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
         />
       </div>
       <div className="flex-1 min-w-[200px]">
-        <label htmlFor="branchFilter" className="block mb-2">
-          Branch:
-        </label>
+        <label className="block mb-2">Branch:</label>
         <Select value={selectedBranch} onValueChange={onBranchChange}>
           <SelectTrigger>
             <SelectValue placeholder="Select branch" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Branches</SelectItem>
-            {branches.map((branch) => (
-              <SelectItem key={branch.id} value={branch.name}>
-                {branch.name}
-              </SelectItem>
+            {branches
+              .filter(branch => branch.id >= 1 && branch.id <= 12)
+              .map((branch) => (
+                <SelectItem key={branch.id} value={branch.name}>
+                  {branch.name}
+                </SelectItem>
             ))}
           </SelectContent>
         </Select>
