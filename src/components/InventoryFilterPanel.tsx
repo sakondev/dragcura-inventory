@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Branch, StockDate } from "@/types/inventory";
 
@@ -43,29 +43,18 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   const [open, setOpen] = React.useState(false);
   const availableDates = stockDates.map(d => new Date(d.date));
   
-  // Find the closest date to today from available dates
-  const findClosestDate = () => {
+  // Get the latest date from available dates
+  const getLatestDate = () => {
     if (availableDates.length === 0) return null;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
-    
-    return availableDates.reduce((closest, current) => {
-      if (!closest) return current;
-      
-      const closestDiff = Math.abs(differenceInDays(closest, today));
-      const currentDiff = Math.abs(differenceInDays(current, today));
-      
-      return currentDiff < closestDiff ? current : closest;
-    }, availableDates[0]);
+    return new Date(Math.max(...availableDates.map(date => date.getTime())));
   };
 
-  // Set closest date when dates are loaded and no date is selected
+  // Set latest date when dates are loaded and no date is selected
   React.useEffect(() => {
     if (stockDates.length > 0 && !selectedDate) {
-      const closestDate = findClosestDate();
-      if (closestDate) {
-        onDateChange(format(closestDate, 'yyyy-MM-dd'));
+      const latestDate = getLatestDate();
+      if (latestDate) {
+        onDateChange(format(latestDate, 'yyyy-MM-dd'));
       }
     }
   }, [stockDates, selectedDate, onDateChange]);
