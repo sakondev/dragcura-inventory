@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useInventoryData } from "@/hooks/useInventoryData";
 import InventoryTable from "@/components/InventoryTable";
 import InventoryFilterPanel from "@/components/InventoryFilterPanel";
+import { useInventoryData } from "@/hooks/useInventoryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -62,7 +62,7 @@ const Inventory = () => {
     }
   };
 
-  if (isLoading || !selectedDate) {
+  if (isLoading) {
     return <DataLoadingIndicator />;
   }
 

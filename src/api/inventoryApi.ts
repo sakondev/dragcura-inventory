@@ -9,14 +9,14 @@ const BASE_URL = "http://127.0.0.1:5052";
 
 export const fetchBranches = async () => {
   const response = await axios.get<BranchesResponse>(`${BASE_URL}/branches`);
-  return {
-    data: response.data.data.filter(branch => branch.id >= 1 && branch.id <= 12)
-  };
+  return response.data;
 };
 
 export const fetchInventory = async (date: string, branch?: string) => {
   const params = new URLSearchParams();
-  params.append('date', date);
+  if (date) {
+    params.append('date', date);
+  }
   if (branch && branch !== 'all') {
     params.append('branch', branch);
   }

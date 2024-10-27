@@ -1,29 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchItems, fetchBranches, fetchStockDates } from "@/api/inventoryApi";
-import { Branch, InventoryItem, StockDate } from "@/types/inventory";
+import { fetchBranches, fetchInventory, fetchStockDates } from "@/api/inventoryApi";
+import type { Branch, InventoryItem, StockDate } from "@/types/inventory";
 
 export const useInventoryData = (selectedDate: string, selectedBranch: string) => {
-  const { data: branches = [], isLoading: isLoadingBranches } = useQuery<Branch[]>({
+  const { data: branchesResponse, isLoading: isLoadingBranches } = useQuery({
     queryKey: ["branches"],
-    queryFn: () => fetchBranches().then(response => response.data),
+    queryFn: fetchBranches,
   });
 
-  const { data: stockDates = [], isLoading: isLoadingDates } = useQuery<StockDate[]>({
+  const { data: stockDatesResponse, isLoading: isLoadingDates } = useQuery({
     queryKey: ["stockDates"],
-    queryFn: () => fetchStockDates().then(response => response.data),
+    queryFn: fetchStockDates,
   });
 
-  const { data: inventory = [], isLoading: isLoadingInventory } = useQuery<InventoryItem[]>({
+  const { data: inventoryResponse, isLoading: isLoadingInventory } = useQuery({
     queryKey: ["inventory", selectedDate, selectedBranch],
-    queryFn: () => fetchInventory(selectedDate, selectedBranch).then(response => response.data),
+    queryFn: () => fetchInventory(selectedDate, selectedBranch),
     enabled: !!selectedDate,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
+
+  const branches = branchesResponse?.data.filter(branch => branch.id >= 1 && branch.id <= 12) || [];
+  const stockDates = stockDatesResponse?.data || [];
+  const inventory = inventoryResponse?.data || [];
 
   return {
     branches,
     stockDates,
     inventory,
-    isLoading: isLoadingBranches || isLoadingDates || isLoadingInventory
+    isLoading: isLoadingBranches || isLoadingDates || isLoadingInventory,
   };
 };
