@@ -16,9 +16,10 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     queryKey: ["inventory", selectedDate, selectedBranch],
     queryFn: () => fetchInventory(selectedDate, selectedBranch),
     enabled: !!selectedDate,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
-  const isLoading = isLoadingBranches || isLoadingDates || isLoadingInventory;
+  const isLoading = isLoadingBranches || isLoadingDates || (!!selectedDate && isLoadingInventory);
 
   return {
     branches,

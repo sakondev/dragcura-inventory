@@ -5,7 +5,7 @@ import InventoryFilterPanel from "@/components/InventoryFilterPanel";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
-import { Loader } from "lucide-react";
+import DataLoadingIndicator from "@/components/DataLoadingIndicator";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -17,11 +17,10 @@ const Inventory = () => {
     selectedBranch
   );
 
+  // Set initial date when stockDates are loaded
   useEffect(() => {
-    if (stockDates.length > 0 && !selectedDate) {
-      const latestDate = stockDates
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
-        .date.split(" ")[0];
+    if (stockDates?.length > 0 && !selectedDate) {
+      const latestDate = stockDates[0].date.split(" ")[0];
       setSelectedDate(latestDate);
     }
   }, [stockDates, selectedDate]);
@@ -62,12 +61,8 @@ const Inventory = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader className="w-12 h-12 animate-spin text-primary" />
-      </div>
-    );
+  if (isLoading || !selectedDate) {
+    return <DataLoadingIndicator />;
   }
 
   return (
@@ -86,7 +81,7 @@ const Inventory = () => {
         <Button onClick={handleCopyTable}>COPY</Button>
         <Button onClick={handleExportExcel}>EXCEL</Button>
       </div>
-      {inventory.length > 0 ? (
+      {inventory && inventory.length > 0 ? (
         <InventoryTable
           inventory={inventory}
           branches={branches}
