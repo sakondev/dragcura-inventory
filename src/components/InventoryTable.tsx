@@ -49,8 +49,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             {renderSeparator()}
             <TableHead className="p-2">Name</TableHead>
             {renderSeparator()}
-            <TableHead className="p-2">Brand</TableHead>
-            {renderSeparator()}
+            {selectedBranch !== "all" && (
+              <>
+                <TableHead className="p-2">Brand</TableHead>
+                {renderSeparator()}
+              </>
+            )}
             {selectedBranch === "all" ? (
               branches
                 .filter(branch => branch.id >= 1 && branch.id <= 12)
@@ -85,8 +89,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 {renderSeparator()}
                 <TableCell className="p-2">{item.item_name}</TableCell>
                 {renderSeparator()}
-                <TableCell className="p-2">{item.item_brand}</TableCell>
-                {renderSeparator()}
+                {selectedBranch !== "all" && (
+                  <>
+                    <TableCell className="p-2">{item.item_brand}</TableCell>
+                    {renderSeparator()}
+                  </>
+                )}
                 {selectedBranch === "all" ? (
                   branches
                     .filter(branch => branch.id >= 1 && branch.id <= 12)
