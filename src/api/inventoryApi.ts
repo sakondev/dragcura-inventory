@@ -5,7 +5,9 @@ const BASE_URL = "http://127.0.0.1:5052";
 
 export const fetchBranches = async () => {
   const response = await axios.get<BranchesResponse>(`${BASE_URL}/branches`);
-  return response.data.data.filter(branch => branch.id >= 1 && branch.id <= 12);
+  return {
+    data: response.data.data.filter(branch => branch.id >= 1 && branch.id <= 12)
+  };
 };
 
 export const fetchInventory = async (date: string, branch?: string) => {
@@ -15,10 +17,10 @@ export const fetchInventory = async (date: string, branch?: string) => {
     params.append('branch', branch);
   }
   const response = await axios.get<InventoryResponse>(`${BASE_URL}/inventory?${params}`);
-  return response.data.data;
+  return response;
 };
 
 export const fetchStockDates = async () => {
   const response = await axios.get<StockDatesResponse>(`${BASE_URL}/stock_dates`);
-  return response.data.data;
+  return response;
 };
