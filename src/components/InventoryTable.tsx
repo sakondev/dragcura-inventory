@@ -78,13 +78,13 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
       <Table>
         <TableHeader>
           <TableRow className="bg-gray-100">
-            <TableHead className="p-2">SKU</TableHead>
+            <TableHead className="p-1 text-xs">SKU</TableHead>
             {renderSeparator()}
-            <TableHead className="p-2">Name</TableHead>
+            <TableHead className="p-1 text-xs">Name</TableHead>
             {renderSeparator()}
             {selectedBranch !== "all" && (
               <>
-                <TableHead className="p-2">Brand</TableHead>
+                <TableHead className="p-1 text-xs">Brand</TableHead>
                 {renderSeparator()}
               </>
             )}
@@ -93,14 +93,14 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 .filter(branch => branch.id >= 1 && branch.id <= 12)
                 .map((branch) => (
                   <React.Fragment key={branch.id}>
-                    <TableHead className="p-2 text-center">
+                    <TableHead className="p-1 text-center">
                       <Button
                         variant="ghost"
                         onClick={() => handleSort(branch.name)}
-                        className="font-semibold"
+                        className="font-semibold text-xs"
                       >
                         {branch.name}
-                        <ArrowUpDown className="ml-1 h-4 w-4" />
+                        <ArrowUpDown className="ml-1 h-3 w-3" />
                       </Button>
                     </TableHead>
                     {renderSeparator()}
@@ -108,21 +108,21 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 ))
             ) : (
               <>
-                <TableHead className="p-2 text-center">
+                <TableHead className="p-1 text-center">
                   <Button
                     variant="ghost"
                     onClick={() => handleSort(selectedBranch)}
-                    className="font-semibold"
+                    className="font-semibold text-xs"
                   >
                     Qty
-                    <ArrowUpDown className="ml-1 h-4 w-4" />
+                    <ArrowUpDown className="ml-1 h-3 w-3" />
                   </Button>
                 </TableHead>
                 {renderSeparator()}
               </>
             )}
             {selectedBranch === "all" && (
-              <TableHead className="p-2 text-center">Total</TableHead>
+              <TableHead className="p-1 text-center text-xs">Total</TableHead>
             )}
           </TableRow>
         </TableHeader>
@@ -136,13 +136,13 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
 
             return (
               <TableRow key={item.item_sku} className="border-b hover:bg-gray-50">
-                <TableCell className="p-2">{item.item_sku}</TableCell>
+                <TableCell className="p-1 text-xs">{item.item_sku}</TableCell>
                 {renderSeparator()}
-                <TableCell className="p-2">{item.item_name}</TableCell>
+                <TableCell className="p-1 text-xs">{item.item_name}</TableCell>
                 {renderSeparator()}
                 {selectedBranch !== "all" && (
                   <>
-                    <TableCell className="p-2">{item.item_brand}</TableCell>
+                    <TableCell className="p-1 text-xs">{item.item_brand}</TableCell>
                     {renderSeparator()}
                   </>
                 )}
@@ -151,7 +151,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                     .filter(branch => branch.id >= 1 && branch.id <= 12)
                     .map((branch) => (
                       <React.Fragment key={branch.id}>
-                        <TableCell className="p-2 text-center">
+                        <TableCell className="p-1 text-center text-xs">
                           {inventory.find(
                             (inv) =>
                               inv.item_sku === item.item_sku &&
@@ -163,12 +163,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                     ))
                 ) : (
                   <>
-                    <TableCell className="p-2 text-center">{item.qty}</TableCell>
+                    <TableCell className="p-1 text-center text-xs">{item.qty}</TableCell>
                     {renderSeparator()}
                   </>
                 )}
                 {selectedBranch === "all" && (
-                  <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
+                  <TableCell className="p-1 text-center font-semibold text-xs">{total}</TableCell>
                 )}
               </TableRow>
             );
