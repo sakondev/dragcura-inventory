@@ -18,6 +18,12 @@ const Inventory = () => {
     selectedBranch
   );
 
+  const filteredInventory = inventory.filter(
+    (item) =>
+      item.item_sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.item_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
     if (stockDates && stockDates.length > 0 && !selectedDate) {
       const today = new Date();
@@ -82,27 +88,21 @@ const Inventory = () => {
         onBranchChange={setSelectedBranch}
         onSearchChange={setSearchTerm}
       />
-      {isInitialLoading ? (
+      {inventory.length === 0 ? (
         <InventoryTableSkeleton />
       ) : (
         <>
-          {inventory && inventory.length > 0 && (
-            <InventorySummary inventory={inventory} />
-          )}
+          <InventorySummary filteredInventory={filteredInventory} />
           <div className="mb-4 flex justify-start space-x-2">
             <Button onClick={handleCopyTable}>COPY</Button>
             <Button onClick={handleExportExcel}>EXCEL</Button>
           </div>
-          {inventory && inventory.length > 0 ? (
-            <InventoryTable
-              inventory={inventory}
-              branches={branches}
-              searchTerm={searchTerm}
-              selectedBranch={selectedBranch}
-            />
-          ) : (
-            <div className="text-center p-4 text-gray-500"></div>
-          )}
+          <InventoryTable
+            inventory={filteredInventory}
+            branches={branches}
+            searchTerm={searchTerm}
+            selectedBranch={selectedBranch}
+          />
         </>
       )}
     </div>
