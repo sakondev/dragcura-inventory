@@ -1,16 +1,7 @@
 import axios from "axios";
-import type {
-  Branch,
-  InventoryItem,
-  StockDate,
-  Item,
-  BranchesResponse,
-  InventoryResponse,
-  StockDatesResponse,
-  ItemsResponse
-} from "@/types/inventory";
+import type { Branch, InventoryItem, StockDate, Item } from "@/types/inventory";
 
-const BASE_URL = "http://127.0.0.1:5052";
+const BASE_URL = "https://drg-database.vercel.app";
 
 export const fetchBranches = async () => {
   const response = await axios.get<Branch[]>(`${BASE_URL}/branches`);
@@ -19,14 +10,16 @@ export const fetchBranches = async () => {
 
 export const fetchInventory = async (date?: string, branch?: string) => {
   if (!date) return { data: [] };
-  
+
   const params = new URLSearchParams();
-  params.append('date', date);
-  if (branch && branch !== 'all') {
-    params.append('branch', branch.toLowerCase());
+  params.append("date", date);
+  if (branch && branch !== "all") {
+    params.append("branch", branch.toLowerCase());
   }
-  
-  const response = await axios.get<InventoryItem[]>(`${BASE_URL}/inventory?${params}`);
+
+  const response = await axios.get<InventoryItem[]>(
+    `${BASE_URL}/inventory?${params}`
+  );
   return { data: response.data };
 };
 
