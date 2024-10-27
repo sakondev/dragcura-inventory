@@ -49,6 +49,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
             {renderSeparator()}
             <TableHead className="p-2">Name</TableHead>
             {renderSeparator()}
+            <TableHead className="p-2">Brand</TableHead>
+            {renderSeparator()}
             {selectedBranch === "all" ? (
               branches
                 .filter(branch => branch.id >= 1 && branch.id <= 12)
@@ -64,7 +66,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 {renderSeparator()}
               </>
             )}
-            <TableHead className="p-2 text-center">Total</TableHead>
+            {selectedBranch === "all" && (
+              <TableHead className="p-2 text-center">Total</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -80,6 +84,8 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 <TableCell className="p-2">{item.item_sku}</TableCell>
                 {renderSeparator()}
                 <TableCell className="p-2">{item.item_name}</TableCell>
+                {renderSeparator()}
+                <TableCell className="p-2">{item.item_brand}</TableCell>
                 {renderSeparator()}
                 {selectedBranch === "all" ? (
                   branches
@@ -102,7 +108,9 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                     {renderSeparator()}
                   </>
                 )}
-                <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
+                {selectedBranch === "all" && (
+                  <TableCell className="p-2 text-center font-semibold">{total}</TableCell>
+                )}
               </TableRow>
             );
           })}
