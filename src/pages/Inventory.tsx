@@ -5,7 +5,6 @@ import { useInventoryData } from "@/hooks/useInventoryData";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import InventorySummary from "@/components/InventorySummary";
 
 const Inventory = () => {
@@ -13,12 +12,11 @@ const Inventory = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
 
-  const { branches, stockDates, inventory, isLoading } = useInventoryData(
+  const { branches, stockDates, inventory } = useInventoryData(
     selectedDate,
     selectedBranch
   );
 
-  // Set initial date when stockDates are loaded
   useEffect(() => {
     if (stockDates && stockDates.length > 0 && !selectedDate) {
       const today = new Date();
@@ -68,10 +66,6 @@ const Inventory = () => {
       toast.error("Failed to export table");
     }
   };
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <div className="container mx-auto p-4">
