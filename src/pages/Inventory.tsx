@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import InventorySummary from "@/components/InventorySummary";
 import InventoryTableSkeleton from "@/components/InventoryTableSkeleton";
+import { useInventoryData } from "@/hooks/useInventoryData";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
