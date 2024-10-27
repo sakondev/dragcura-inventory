@@ -5,7 +5,6 @@ import { DateRange } from "react-day-picker";
 import { useSalesData } from "@/hooks/useSalesData";
 import { filterSalesByType } from "@/utils/salesFilters";
 import DashboardContent from "@/components/DashboardContent";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 const Dashboard: React.FC = () => {
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
@@ -14,7 +13,7 @@ const Dashboard: React.FC = () => {
   const [chartType, setChartType] = useState<"all" | "offline" | "online">("all");
 
   const { toast } = useToast();
-  const { branches, items, saleDates, isLoading, error } = useSalesData(
+  const { branches, items, saleDates, error } = useSalesData(
     dateRange,
     selectedBranch
   );
@@ -37,10 +36,6 @@ const Dashboard: React.FC = () => {
       setDateRange({ from: latestDate, to: latestDate });
     }
   }, [saleDates, dateRange]);
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
 
   const filteredSales = (items?.data || []).filter((sale) => {
     const matchesSearch =
@@ -149,9 +144,9 @@ const Dashboard: React.FC = () => {
         dateRange={dateRange}
         saleDates={availableSaleDates}
       />
-      {!isLoading && items?.data && (
+      {items?.data && (
         <DashboardContent
-          isLoading={isLoading}
+          isLoading={false}
           selectedBranch={selectedBranch}
           chartType={chartType}
           setChartType={setChartType}
