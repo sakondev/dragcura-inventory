@@ -51,14 +51,18 @@ const Dashboard: React.FC = () => {
     chartType
   );
 
-  const branchChartData =
-    selectedBranches.length > 0
-      ? selectedBranches.map(branch => {
-          const branchSales = filteredByType.filter(sale => sale.branch_name === branch);
-          const totalSales = branchSales.reduce((sum, sale) => sum + sale.net_sales, 0);
-          return { name: branch, value: totalSales };
-        }).filter(data => data.value > 0)
-      : [];
+  const branchChartData = Object.values(
+    filteredByType.reduce((acc, sale) => {
+      if (!acc[sale.branch_name]) {
+        acc[sale.branch_name] = {
+          name: sale.branch_name,
+          value: 0,
+        };
+      }
+      acc[sale.branch_name].value += sale.net_sales;
+      return acc;
+    }, {} as Record<string, { name: string; value: number }>)
+  ).sort((a, b) => b.value - a.value);
 
   const productChartData = Object.values(
     filteredByType.reduce((acc, sale) => {
