@@ -22,16 +22,18 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
   selectedBranch,
 }) => {
   const formatBranchDisplay = (branches: string) => {
-    const branchArray = branches.split(',');
+    const branchArray = branches.split(",");
     if (branchArray.length <= 2) return branches;
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger className="cursor-help">
-            <span>{branchArray[0]}, {branchArray[1]} +{branchArray.length - 2} more</span>
+            <span>
+              {branchArray[0]}, {branchArray[1]} +{branchArray.length - 2} more
+            </span>
           </TooltipTrigger>
           <TooltipContent>
-            <p>{branchArray.join(', ')}</p>
+            <p>{branchArray.join(", ")}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -62,7 +64,9 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           {selectedBranch !== "online" && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">In-Store Sales</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  In-Store Sales
+                </CardTitle>
                 <Store className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -71,7 +75,9 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  <span className="text-xs text-muted-foreground ml-1">THB</span>
+                  <span className="text-xs text-muted-foreground ml-1">
+                    THB
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -79,7 +85,9 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
           {selectedBranch !== "offline" && (
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Online Sales</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Online Sales
+                </CardTitle>
                 <ShoppingCart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -88,7 +96,9 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  <span className="text-xs text-muted-foreground ml-1">THB</span>
+                  <span className="text-xs text-muted-foreground ml-1">
+                    THB
+                  </span>
                 </div>
               </CardContent>
             </Card>
