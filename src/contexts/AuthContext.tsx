@@ -23,13 +23,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(false);
 
     // Redirect to login if no token found
-    if (!token && window.location.pathname !== '/login') {
-      navigate('/login');
+    if (!token && window.location.pathname !== "/login") {
+      navigate("/login");
     }
   }, [navigate]);
 
   const login = async (username: string, password: string) => {
-    if (username === "admin" && password === "password") {
+    if (username === "dragcura" && password === "dragcura321") {
       localStorage.setItem("auth_token", "dummy_token");
       setIsAuthenticated(true);
       navigate("/");

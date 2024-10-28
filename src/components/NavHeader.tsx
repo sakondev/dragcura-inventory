@@ -23,7 +23,9 @@ const NavHeader: React.FC = () => {
               <li>
                 <Link
                   to="/"
-                  className="hover:bg-secondary hover:text-primary border border-secondary text-white px-3 py-2 rounded-sm"
+                  className={`hover:bg-sky-600 hover:text-primary border border-secondary text-white px-3 py-2 rounded-sm ${
+                    location.pathname === "/" ? "bg-sky-600" : ""
+                  }`}
                 >
                   SALES REPORT
                 </Link>
@@ -31,7 +33,9 @@ const NavHeader: React.FC = () => {
               <li>
                 <Link
                   to="/inventory"
-                  className="hover:bg-secondary hover:text-primary border border-secondary text-white px-3 py-2 rounded-sm"
+                  className={`hover:bg-sky-600 hover:text-primary border border-secondary text-white px-3 py-2 rounded-sm ${
+                    location.pathname === "/inventory" ? "bg-sky-600" : ""
+                  }`}
                 >
                   STOCK REPORT
                 </Link>
@@ -41,7 +45,7 @@ const NavHeader: React.FC = () => {
           <Button
             onClick={logout}
             variant="secondary"
-            className="text-primary hover:text-primary"
+            className="text-primary hover:text-primary hidden sm:block"
           >
             Logout
           </Button>
