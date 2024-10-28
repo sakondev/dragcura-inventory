@@ -104,7 +104,7 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
           type="text"
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by SKU or Name"
+          placeholder="Search products (Name/SKU)"
           className="w-full"
         />
       </div>

@@ -35,6 +35,18 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           saleDates={saleDates}
         />
       </div>
+      <div className="flex-1 min-w-[200px] relative">
+        <Input
+          type="text"
+          placeholder="Search products (Name/SKU)"
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="w-full pl-8"
+        />
+        <Search
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
+          size={16}
+        />
+      </div>
       <div className="flex-1 min-w-[200px]">
         <BranchSelector
           selectedBranches={selectedBranches}
@@ -60,18 +72,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           ))}
         </div>
       )}
-      <div className="flex-1 min-w-[200px] relative">
-        <Input
-          type="text"
-          placeholder="Search products (Name/SKU)"
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-8"
-        />
-        <Search
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400"
-          size={16}
-        />
-      </div>
     </div>
   );
 };
