@@ -4,6 +4,7 @@ import * as React from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import { useEffect, useState } from "react"; // Import useEffect and useState
 
 import { cn } from "@/lib/utils"; // Adjust based on your utility path
 import { Button } from "@/components/ui/button"; // Adjust based on your component path
@@ -29,6 +30,8 @@ export function DateRangePicker({
     DateRange | undefined
   >(dateRange);
 
+  const [latestDate, setLatestDate] = useState<Date | null>(null); // State for latest date
+
   const disabledDate = (date: Date) => {
     return !saleDates.some(
       (saleDate) =>
@@ -49,6 +52,18 @@ export function DateRangePicker({
     }
     setSelectedRange(range);
   };
+
+  useEffect(() => {
+    // Fetch the latest date from /sales_date API
+    const fetchLatestDate = async () => {
+      const response = await fetch("/sales_date"); // Adjust the API endpoint as needed
+      const data = await response.json();
+      const latest = new Date(data.latestDate); // Assuming the API returns an object with latestDate
+      setLatestDate(latest);
+    };
+
+    fetchLatestDate();
+  }, []); // Run once on component mount
 
   return (
     <div className="flex-1 min-w-[200px]">
@@ -71,7 +86,9 @@ export function DateRangePicker({
                 format(selectedRange.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>
+                {latestDate ? format(latestDate, "LLL dd, y") : "Pick a date"}
+              </span> // Show latest date or default text
             )}
           </Button>
         </PopoverTrigger>

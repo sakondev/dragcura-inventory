@@ -115,7 +115,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             >
               {selectedBranches.length === 0
                 ? "Select branches..."
-                : `${selectedBranches.length} selected`}
+                : `${selectedBranches.length} Selected`}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -194,7 +194,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         </Popover>
       </div>
       {selectedBranches.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 hidden">
           {selectedBranches.map((branch) => (
             <Badge
               key={branch}
