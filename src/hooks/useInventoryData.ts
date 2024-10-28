@@ -1,14 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchBranches, fetchInventory, fetchStockDates } from "@/api/inventoryApi";
+import {
+  fetchBranches,
+  fetchInventory,
+  fetchStockDates,
+} from "@/api/inventoryApi";
 
-export const useInventoryData = (selectedDate: string, selectedBranch: string) => {
+export const useInventoryData = (
+  selectedDate: string,
+  selectedBranch: string
+) => {
   const { data: branchesResponse } = useQuery({
     queryKey: ["branches"],
     queryFn: fetchBranches,
     staleTime: Infinity,
     gcTime: Infinity,
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: false,
   });
 
   const { data: stockDatesResponse } = useQuery({
@@ -17,7 +24,7 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     staleTime: Infinity,
     gcTime: Infinity,
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: false,
   });
 
   const { data: inventoryResponse } = useQuery({
@@ -28,7 +35,7 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
     gcTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    placeholderData: (previousData) => previousData
+    placeholderData: (previousData) => previousData,
   });
 
   const branches = branchesResponse?.data || [];
@@ -38,6 +45,6 @@ export const useInventoryData = (selectedDate: string, selectedBranch: string) =
   return {
     branches,
     stockDates,
-    inventory
+    inventory,
   };
 };

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import InventorySummary from "@/components/InventorySummary";
 import { useInventoryData } from "@/hooks/useInventoryData";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -35,7 +36,7 @@ const Inventory = () => {
       }, new Date(stockDates[0].date.split(" ")[0]));
       setSelectedDate(closestDate.toISOString().split("T")[0]);
     }
-  }, [stockDates, selectedDate]);
+  }, [stockDates]); // Remove selectedDate from dependency array
 
   const handleCopyTable = () => {
     const table = document.querySelector("table");
@@ -73,7 +74,9 @@ const Inventory = () => {
     }
   };
 
-  // const isInitialLoading = !branches.length || !stockDates.length;
+  if (!branches.length || !stockDates.length) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -88,7 +91,7 @@ const Inventory = () => {
         onSearchChange={setSearchTerm}
       />
       {inventory.length === 0 ? (
-        <div>No inventory available</div>
+        <div></div>
       ) : (
         <>
           <InventorySummary filteredInventory={filteredInventory} />
