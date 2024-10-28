@@ -4,21 +4,14 @@ import { DateRange } from 'react-day-picker';
 import { DateRangePicker } from './DateRangePicker';
 import { Search } from 'lucide-react';
 import { Badge } from "@/components/ui/badge"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import { Button } from './ui/button';
-import { Check, ChevronsUpDown } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ChevronsUpDown } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface FilterPanelProps {
   branches: string[];
@@ -39,8 +32,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   dateRange,
   saleDates,
 }) => {
-  const [open, setOpen] = React.useState(false)
-
   const handleSelect = (branch: string) => {
     if (selectedBranches.includes(branch)) {
       onBranchChange(selectedBranches.filter(b => b !== branch));
@@ -56,12 +47,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         onDateRangeChange={onDateRangeChange} 
         saleDates={saleDates} 
       />
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            role="combobox"
-            aria-expanded={open}
             className="w-[200px] justify-between"
           >
             {selectedBranches.length === 0 
@@ -69,31 +58,19 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               : `${selectedBranches.length} selected`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandInput placeholder="Search branch..." />
-            <CommandEmpty>No branch found.</CommandEmpty>
-            <CommandGroup>
-              {branches.map((branch) => (
-                <CommandItem
-                  key={branch}
-                  value={branch}
-                  onSelect={() => handleSelect(branch)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      selectedBranches.includes(branch) ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {branch}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[200px]">
+          {branches.map((branch) => (
+            <DropdownMenuCheckboxItem
+              key={branch}
+              checked={selectedBranches.includes(branch)}
+              onCheckedChange={() => handleSelect(branch)}
+            >
+              {branch}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {selectedBranches.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedBranches.map(branch => (
