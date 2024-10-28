@@ -10,7 +10,6 @@ const Dashboard: React.FC = () => {
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-  const [chartType, setChartType] = useState<"all" | "offline" | "online">("all");
 
   const { toast } = useToast();
   const { branches, items, saleDates, error } = useSalesData(
@@ -48,7 +47,7 @@ const Dashboard: React.FC = () => {
   const filteredByType = filterSalesByType(
     filteredSales,
     branches?.data || [],
-    chartType
+    "all"
   );
 
   const branchChartData = Object.values(
@@ -140,8 +139,6 @@ const Dashboard: React.FC = () => {
       {items?.data && (
         <DashboardContent
           selectedBranch={selectedBranches.length === 0 ? "all" : selectedBranches.join(',')}
-          chartType={chartType}
-          setChartType={setChartType}
           filteredByType={filteredByType}
           totalSales={totalSales}
           inStoreSales={inStoreSales}

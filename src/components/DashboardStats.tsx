@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CircleDollarSign, Store, ShoppingCart } from "lucide-react";
 
 interface DashboardStatsProps {
   totalSales: number;
@@ -21,48 +22,51 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
         selectedBranch === "online") && (
         <>
           <Card>
-            <CardHeader>
-              <CardTitle>Total Sales</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+              <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">
+              <div className="text-2xl font-bold">
                 {totalSales.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-                {" "}THB
-              </p>
+                <span className="text-xs text-muted-foreground ml-1">THB</span>
+              </div>
             </CardContent>
           </Card>
           {selectedBranch !== "online" && (
             <Card>
-              <CardHeader>
-                <CardTitle>In-Store Sales</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">In-Store Sales</CardTitle>
+                <Store className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">
+                <div className="text-2xl font-bold">
                   {inStoreSales.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  {" "}THB
-                </p>
+                  <span className="text-xs text-muted-foreground ml-1">THB</span>
+                </div>
               </CardContent>
             </Card>
           )}
           {selectedBranch !== "offline" && (
             <Card>
-              <CardHeader>
-                <CardTitle>Online Sales</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Online Sales</CardTitle>
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">
+                <div className="text-2xl font-bold">
                   {onlineSales.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}
-                  {" "}THB
-                </p>
+                  <span className="text-xs text-muted-foreground ml-1">THB</span>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -72,17 +76,20 @@ const DashboardStats: React.FC<DashboardStatsProps> = ({
         selectedBranch !== "offline" &&
         selectedBranch !== "online" && (
           <Card className="md:col-span-3">
-            <CardHeader>
-              <CardTitle>Total Sales for {selectedBranch}</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Sales for {selectedBranch}
+              </CardTitle>
+              <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">
+              <div className="text-2xl font-bold">
                 {totalSales.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-                {" "}THB
-              </p>
+                <span className="text-xs text-muted-foreground ml-1">THB</span>
+              </div>
             </CardContent>
           </Card>
         )}
