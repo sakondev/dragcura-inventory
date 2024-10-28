@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from './ui/button';
 import { ChevronsUpDown } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@/components/ui/command"
+import { Command, CommandInput, CommandList, CommandGroup, CommandItem, CommandSeparator } from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
@@ -113,33 +113,35 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                       All Branches
                     </div>
                   </CommandItem>
-                  {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) => (
-                    <CommandItem
-                      key={groupName}
-                      onSelect={() => handleGroupSelect(groupBranches)}
-                      className="cursor-pointer"
-                    >
-                      <div className="flex items-center">
-                        <div className={`mr-2 h-4 w-4 border rounded-sm ${
-                          groupBranches.every(branch => selectedBranches.includes(branch)) ? 'bg-primary' : ''
-                        }`} />
-                        {groupName}
-                      </div>
-                    </CommandItem>
-                  ))}
-                  {filteredBranches.map((branch) => (
-                    <CommandItem
-                      key={branch}
-                      onSelect={() => handleSelect(branch)}
-                      className="cursor-pointer"
-                    >
-                      <div className="flex items-center">
-                        <div className={`mr-2 h-4 w-4 border rounded-sm ${
-                          selectedBranches.includes(branch) ? 'bg-primary' : ''
-                        }`} />
-                        {branch}
-                      </div>
-                    </CommandItem>
+                  {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches], index) => (
+                    <React.Fragment key={groupName}>
+                      {index > 0 && <CommandSeparator />}
+                      <CommandItem
+                        onSelect={() => handleGroupSelect(groupBranches)}
+                        className="cursor-pointer bg-muted/50 font-medium"
+                      >
+                        <div className="flex items-center">
+                          <div className={`mr-2 h-4 w-4 border rounded-sm ${
+                            groupBranches.every(branch => selectedBranches.includes(branch)) ? 'bg-primary' : ''
+                          }`} />
+                          {groupName}
+                        </div>
+                      </CommandItem>
+                      {groupBranches.map((branch) => (
+                        <CommandItem
+                          key={branch}
+                          onSelect={() => handleSelect(branch)}
+                          className="cursor-pointer pl-6"
+                        >
+                          <div className="flex items-center">
+                            <div className={`mr-2 h-4 w-4 border rounded-sm ${
+                              selectedBranches.includes(branch) ? 'bg-primary' : ''
+                            }`} />
+                            {branch}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </React.Fragment>
                   ))}
                 </CommandGroup>
               </ScrollArea>
