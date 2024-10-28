@@ -36,6 +36,13 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
   productChartData,
   tableData,
 }) => {
+  // Check if selectedBranch contains multiple branches (comma-separated)
+  const hasMultipleBranches = selectedBranch.includes(',');
+  const shouldShowBranchChart = selectedBranch === "all" || 
+    selectedBranch === "offline" || 
+    selectedBranch === "online" ||
+    hasMultipleBranches;
+
   return (
     <>
       <DashboardStats
@@ -72,16 +79,12 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
       )}
       <div
         className={`grid ${
-          selectedBranch === "all" ||
-          selectedBranch === "offline" ||
-          selectedBranch === "online"
+          shouldShowBranchChart
             ? "grid-cols-1 md:grid-cols-2"
             : "grid-cols-1"
         } gap-4`}
       >
-        {(selectedBranch === "all" ||
-          selectedBranch === "offline" ||
-          selectedBranch === "online") && (
+        {shouldShowBranchChart && (
           <div>
             <h2 className="text-xl font-bold mb-2">Sales by Branch</h2>
             <SalesChart data={branchChartData} />
@@ -89,9 +92,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         )}
         <div
           className={
-            selectedBranch === "all" ||
-            selectedBranch === "offline" ||
-            selectedBranch === "online"
+            shouldShowBranchChart
               ? ""
               : "col-span-1"
           }
