@@ -10,15 +10,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    // Initialize state from localStorage during component creation
+    return localStorage.getItem("auth_token") !== null;
+  });
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("auth_token");
-    if (token) {
-      setIsAuthenticated(true);
+    setIsAuthenticated(!!token);
+    setIsLoading(false);
+
+    // Redirect to login if no token found
+    if (!token && window.location.pathname !== '/login') {
+      navigate('/login');
     }
-  }, []);
+  }, [navigate]);
 
   const login = async (username: string, password: string) => {
     if (username === "admin" && password === "password") {
@@ -35,6 +43,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuthenticated(false);
     navigate("/login");
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
