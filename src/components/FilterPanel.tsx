@@ -1,18 +1,18 @@
 import React from 'react';
-import { Input } from "@/components/ui/input"
-import { DateRangePicker } from './DateRangePicker';
+import { Input } from "@/components/ui/input";
 import { Search } from 'lucide-react';
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 import { Button } from './ui/button';
-import { ChevronsUpDown } from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@/components/ui/command"
+import { ChevronsUpDown } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import type { DateRange } from 'react-day-picker';
+import { DateRangePicker } from './DateRangePicker';
 
 interface FilterPanelProps {
   branches: string[];
@@ -23,16 +23,6 @@ interface FilterPanelProps {
   dateRange: DateRange | undefined;
   saleDates: Date[];
 }
-
-const BRANCH_GROUPS = {
-  'In-Store': ['SAM', 'TCC', 'RM9', 'ESV', 'MGB', 'EMB', 'EMQ'],
-  'Vending Machine': ['True Digital Park', 'T One Building'],
-  'Online': [
-    'Shopee', 'Lazada', 'TikTok', 'LINE', 'LINE MyShop', 'dragcura.com',
-    'COL', 'Unknow', 'Flipper (Shopee)', 'Flipper (Lazada)', 'ฝ่ายขาย',
-    'B-Healthy', 'ฝากขาย', 'Facebook'
-  ]
-};
 
 const FilterPanel: React.FC<FilterPanelProps> = ({
   branches,
@@ -73,6 +63,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     branch.toLowerCase().includes(branchSearch.toLowerCase())
   );
 
+  const BRANCH_GROUPS = {
+    'In-Store': ['SAM', 'TCC', 'RM9', 'ESV', 'MGB', 'EMB', 'EMQ'],
+    'Vending Machine': ['True Digital Park', 'T One Building'],
+    'Online': [
+      'Shopee', 'Lazada', 'TikTok', 'LINE', 'LINE MyShop', 'dragcura.com',
+      'COL', 'Unknow', 'Flipper (Shopee)', 'Flipper (Lazada)', 'ฝ่ายขาย',
+      'B-Healthy', 'ฝากขาย', 'Facebook'
+    ]
+  };
+
   return (
     <div className="flex flex-wrap gap-4 p-4 bg-gray-100 rounded-lg">
       <DateRangePicker 
@@ -104,15 +104,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <CommandList>
               <ScrollArea className="h-[300px]">
                 <CommandGroup>
-                  <CommandItem
-                    onSelect={() => onBranchChange([])}
-                    className="cursor-pointer"
-                  >
-                    <div className="flex items-center">
-                      <div className={`mr-2 h-4 w-4 border rounded-sm ${selectedBranches.length === 0 ? 'bg-primary' : ''}`} />
-                      All Branches
-                    </div>
-                  </CommandItem>
                   {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) => (
                     <CommandItem
                       key={groupName}

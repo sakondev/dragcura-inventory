@@ -1,10 +1,15 @@
-import React from 'react';
-import { DatePicker } from 'antd';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
-import { DateRange } from 'react-day-picker';
-
-const { RangePicker } = DatePicker;
+import * as React from "react"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon } from "lucide-react"
+import { DateRange } from "react-day-picker"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface DateRangePickerProps {
   dateRange: DateRange | undefined;
@@ -13,35 +18,54 @@ interface DateRangePickerProps {
 }
 
 export function DateRangePicker({ dateRange, onDateRangeChange, saleDates }: DateRangePickerProps) {
-  const disabledDate = (current: Dayjs) => {
+  const disabledDays = (date: Date) => {
     return !saleDates.some(
       (saleDate) =>
-        saleDate.getFullYear() === current.year() &&
-        saleDate.getMonth() === current.month() &&
-        saleDate.getDate() === current.date()
+        saleDate.getFullYear() === date.getFullYear() &&
+        saleDate.getMonth() === date.getMonth() &&
+        saleDate.getDate() === date.getDate()
     );
   };
 
-  const handleChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
-    if (dates && dates[0] && dates[1]) {
-      const from = dates[0].toDate();
-      const to = dates[1].toDate();
-      onDateRangeChange({
-        from: from,
-        to: to.getTime() === from.getTime() ? from : to, // If dates are the same, use the same date for both values
-      });
-    } else {
-      onDateRangeChange(undefined);
-    }
-  };
-
   return (
-    <RangePicker
-      style={{ width: '300px' }}
-      disabledDate={disabledDate}
-      value={dateRange ? [dayjs(dateRange.from), dayjs(dateRange.to)] : null}
-      onChange={handleChange}
-      allowEmpty={[false, false]}
-    />
+    <div className="grid gap-2">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            variant={"outline"}
+            className={cn(
+              "w-[300px] justify-start text-left font-normal",
+              !dateRange && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {dateRange?.from ? (
+              dateRange.to ? (
+                <>
+                  {format(dateRange.from, "LLL dd, y")} -{" "}
+                  {format(dateRange.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(dateRange.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={onDateRangeChange}
+            numberOfMonths={2}
+            disabled={disabledDays}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
