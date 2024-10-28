@@ -5,6 +5,8 @@ import { Search } from 'lucide-react';
 import { Badge } from "@/components/ui/badge"
 import { Button } from './ui/button';
 import { ChevronsUpDown } from "lucide-react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@/components/ui/command"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -12,6 +14,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import type { DateRange } from 'react-day-picker';
 
 interface FilterPanelProps {
   branches: string[];
@@ -42,6 +45,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   dateRange,
   saleDates,
 }) => {
+  const [branchSearch, setBranchSearch] = React.useState("");
+
   const handleSelect = (branch: string) => {
     if (selectedBranches.includes(branch)) {
       onBranchChange(selectedBranches.filter(b => b !== branch));
@@ -51,12 +56,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   const handleGroupSelect = (groupBranches: string[]) => {
-    // If all branches in the group are selected, deselect them
     const allSelected = groupBranches.every(branch => selectedBranches.includes(branch));
     if (allSelected) {
       onBranchChange(selectedBranches.filter(b => !groupBranches.includes(b)));
     } else {
-      // Add all branches from the group that aren't already selected
       const newBranches = [...selectedBranches];
       groupBranches.forEach(branch => {
         if (!newBranches.includes(branch)) {
@@ -66,6 +69,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       onBranchChange(newBranches);
     }
   };
+
+  const filteredBranches = branches.filter(branch => 
+    branch.toLowerCase().includes(branchSearch.toLowerCase())
+  );
 
   return (
     <div className="flex flex-wrap gap-4 p-4 bg-gray-100 rounded-lg">
@@ -87,32 +94,45 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[200px]">
-          <DropdownMenuCheckboxItem
-            checked={selectedBranches.length === 0}
-            onCheckedChange={() => onBranchChange([])}
-          >
-            Select All (No param)
-          </DropdownMenuCheckboxItem>
-          <DropdownMenuSeparator />
-          {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) => (
-            <DropdownMenuCheckboxItem
-              key={groupName}
-              checked={groupBranches.every(branch => selectedBranches.includes(branch))}
-              onCheckedChange={() => handleGroupSelect(groupBranches)}
-            >
-              {groupName}
-            </DropdownMenuCheckboxItem>
-          ))}
-          <DropdownMenuSeparator />
-          {branches.map((branch) => (
-            <DropdownMenuCheckboxItem
-              key={branch}
-              checked={selectedBranches.includes(branch)}
-              onCheckedChange={() => handleSelect(branch)}
-            >
-              {branch}
-            </DropdownMenuCheckboxItem>
-          ))}
+          <Command>
+            <CommandInput 
+              placeholder="Search branches..." 
+              value={branchSearch}
+              onValueChange={setBranchSearch}
+            />
+            <CommandList>
+              <ScrollArea className="h-[300px]">
+                <CommandGroup>
+                  <DropdownMenuCheckboxItem
+                    checked={selectedBranches.length === 0}
+                    onCheckedChange={() => onBranchChange([])}
+                  >
+                    All Branches
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuSeparator />
+                  {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) => (
+                    <DropdownMenuCheckboxItem
+                      key={groupName}
+                      checked={groupBranches.every(branch => selectedBranches.includes(branch))}
+                      onCheckedChange={() => handleGroupSelect(groupBranches)}
+                    >
+                      {groupName}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                  <DropdownMenuSeparator />
+                  {filteredBranches.map((branch) => (
+                    <DropdownMenuCheckboxItem
+                      key={branch}
+                      checked={selectedBranches.includes(branch)}
+                      onCheckedChange={() => handleSelect(branch)}
+                    >
+                      {branch}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </CommandGroup>
+              </ScrollArea>
+            </CommandList>
+          </Command>
         </DropdownMenuContent>
       </DropdownMenu>
       {selectedBranches.length > 0 && (
