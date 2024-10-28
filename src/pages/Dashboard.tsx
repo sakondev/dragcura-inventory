@@ -53,13 +53,16 @@ const Dashboard: React.FC = () => {
 
   const branchChartData = Object.values(
     filteredByType.reduce((acc, sale) => {
-      if (!acc[sale.branch_name]) {
-        acc[sale.branch_name] = {
-          name: sale.branch_name,
-          value: 0,
-        };
+      // Only include selected branches or all branches if none selected
+      if (selectedBranches.length === 0 || selectedBranches.includes(sale.branch_name)) {
+        if (!acc[sale.branch_name]) {
+          acc[sale.branch_name] = {
+            name: sale.branch_name,
+            value: 0,
+          };
+        }
+        acc[sale.branch_name].value += sale.net_sales;
       }
-      acc[sale.branch_name].value += sale.net_sales;
       return acc;
     }, {} as Record<string, { name: string; value: number }>)
   ).sort((a, b) => b.value - a.value);
