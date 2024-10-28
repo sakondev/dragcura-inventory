@@ -20,7 +20,7 @@ const App = () => (
           <NavHeader />
           <Suspense fallback={<LoadingSpinner />}>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="//" element={<Dashboard />} />
               <Route path="/inventory" element={<Inventory />} />
             </Routes>
           </Suspense>
