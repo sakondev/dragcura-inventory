@@ -5,7 +5,7 @@ import type {
   SaleDatesResponse,
 } from "@/types/sales";
 
-const BASE_URL = "http://127.0.0.1:5052";
+const BASE_URL = "https://drg-database.vercel.app";
 
 export const fetchSaleDates = () =>
   axios.get<any, SaleDatesResponse>(`${BASE_URL}/sale_dates`);

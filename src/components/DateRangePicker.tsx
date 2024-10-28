@@ -1,10 +1,18 @@
-import React from 'react';
-import { DatePicker } from 'antd';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
-import { DateRange } from 'react-day-picker';
+"use client";
 
-const { RangePicker } = DatePicker;
+import * as React from "react";
+import { addDays, format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+
+import { cn } from "@/lib/utils"; // Adjust based on your utility path
+import { Button } from "@/components/ui/button"; // Adjust based on your component path
+import { Calendar } from "@/components/ui/calendar"; // Adjust based on your component path
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"; // Adjust based on your component path
 
 interface DateRangePickerProps {
   dateRange: DateRange | undefined;
@@ -12,36 +20,73 @@ interface DateRangePickerProps {
   saleDates: Date[];
 }
 
-export function DateRangePicker({ dateRange, onDateRangeChange, saleDates }: DateRangePickerProps) {
-  const disabledDate = (current: Dayjs) => {
+export function DateRangePicker({
+  dateRange,
+  onDateRangeChange,
+  saleDates,
+}: DateRangePickerProps) {
+  const [selectedRange, setSelectedRange] = React.useState<
+    DateRange | undefined
+  >(dateRange);
+
+  const disabledDate = (date: Date) => {
     return !saleDates.some(
       (saleDate) =>
-        saleDate.getFullYear() === current.year() &&
-        saleDate.getMonth() === current.month() &&
-        saleDate.getDate() === current.date()
+        saleDate.getFullYear() === date.getFullYear() &&
+        saleDate.getMonth() === date.getMonth() &&
+        saleDate.getDate() === date.getDate()
     );
   };
 
-  const handleChange = (dates: [Dayjs | null, Dayjs | null] | null) => {
-    if (dates && dates[0] && dates[1]) {
-      const from = dates[0].toDate();
-      const to = dates[1].toDate();
-      onDateRangeChange({
-        from: from,
-        to: to.getTime() === from.getTime() ? from : to, // If dates are the same, use the same date for both values
-      });
+  const handleDateSelect = (range: DateRange | undefined) => {
+    // ถ้ามีแค่ range.from แต่ไม่มี range.to
+    if (range && range.from && !range.to) {
+      // ใช้ range.from เป็นทั้ง from และ to
+      onDateRangeChange({ from: range.from, to: range.from });
     } else {
-      onDateRangeChange(undefined);
+      // ส่งค่าทั้ง from และ to
+      onDateRangeChange(range);
     }
+    setSelectedRange(range);
   };
 
   return (
-    <RangePicker
-      style={{ width: '300px' }}
-      disabledDate={disabledDate}
-      value={dateRange ? [dayjs(dateRange.from), dayjs(dateRange.to)] : null}
-      onChange={handleChange}
-      allowEmpty={[false, false]}
-    />
+    <div className="flex-1 min-w-[200px]">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={`w-full justify-start text-left font-normal ${
+              !selectedRange && "text-muted-foreground"
+            }`}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {selectedRange?.from ? (
+              selectedRange.to ? (
+                <>
+                  {format(selectedRange.from, "LLL dd, y")} -{" "}
+                  {format(selectedRange.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(selectedRange.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={selectedRange?.from}
+            selected={selectedRange}
+            onSelect={handleDateSelect}
+            numberOfMonths={2}
+            disabled={disabledDate}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }

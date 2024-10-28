@@ -65,7 +65,7 @@ const SalesTable: React.FC<SalesTableProps> = ({ data = [] }) => {
                 onClick={() => toggleSort("sku")}
                 className="font-bold text-gray-800"
               >
-                SKU <ArrowUpDown className="ml-2 h-4 w-4" />
+                SKU <ArrowUpDown className="ml-2 h-2 w-2" />
               </Button>
             </TableHead>
             <TableHead>
@@ -74,7 +74,7 @@ const SalesTable: React.FC<SalesTableProps> = ({ data = [] }) => {
                 onClick={() => toggleSort("name")}
                 className="font-bold text-gray-800"
               >
-                Product Name <ArrowUpDown className="ml-2 h-4 w-4" />
+                Product Name <ArrowUpDown className="ml-2 h-2 w-2" />
               </Button>
             </TableHead>
             <TableHead className="text-right">
@@ -83,7 +83,7 @@ const SalesTable: React.FC<SalesTableProps> = ({ data = [] }) => {
                 onClick={() => toggleSort("qtySold")}
                 className="font-bold text-gray-800"
               >
-                Qty Sold <ArrowUpDown className="ml-2 h-4 w-4" />
+                Qty Sold <ArrowUpDown className="ml-2 h-2 w-2" />
               </Button>
             </TableHead>
             <TableHead className="text-right">
@@ -92,7 +92,7 @@ const SalesTable: React.FC<SalesTableProps> = ({ data = [] }) => {
                 onClick={() => toggleSort("totalSale")}
                 className="font-bold text-gray-800"
               >
-                Total Sales <ArrowUpDown className="ml-2 h-4 w-4" />
+                Total Sales <ArrowUpDown className="ml-2 h-2 w-2" />
               </Button>
             </TableHead>
           </TableRow>
@@ -100,7 +100,9 @@ const SalesTable: React.FC<SalesTableProps> = ({ data = [] }) => {
         <TableBody>
           <TableRow className="bg-blue-50 font-semibold">
             <TableCell colSpan={2}>Total</TableCell>
-            <TableCell className="text-right">{totals.qtySold.toLocaleString()}</TableCell>
+            <TableCell className="text-right">
+              {totals.qtySold.toLocaleString()}
+            </TableCell>
             <TableCell className="text-right">
               {totals.totalSale.toLocaleString(undefined, {
                 minimumFractionDigits: 2,

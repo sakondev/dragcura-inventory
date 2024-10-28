@@ -60,9 +60,8 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
   }, [stockDates, selectedDate, onDateChange]);
 
   return (
-    <div className="mb-4 flex flex-wrap gap-4">
+    <div className="mb-4 flex flex-wrap gap-4 p-4 bg-gray-100 rounded-lg">
       <div className="flex-1 min-w-[200px]">
-        <label className="block mb-2">Select Date:</label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -73,7 +72,9 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? format(new Date(selectedDate), "PPP") : "Pick a date"}
+              {selectedDate
+                ? format(new Date(selectedDate), "PPP")
+                : "Pick a date"}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -99,7 +100,6 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
         </Popover>
       </div>
       <div className="flex-1 min-w-[200px]">
-        <label className="block mb-2">Search:</label>
         <Input
           type="text"
           value={searchTerm}
@@ -109,7 +109,6 @@ const InventoryFilterPanel: React.FC<InventoryFilterPanelProps> = ({
         />
       </div>
       <div className="flex-1 min-w-[200px]">
-        <label className="block mb-2">Branch:</label>
         <Select value={selectedBranch} onValueChange={onBranchChange}>
           <SelectTrigger>
             <SelectValue placeholder="Select branch" />
