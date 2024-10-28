@@ -13,12 +13,12 @@ export const fetchSaleDates = () =>
 export const fetchItems = (
   dateFrom: string,
   dateTo: string,
-  branch?: string
+  branches?: string
 ) => {
   const params = {
     datefrom: dateFrom,
     dateto: dateTo,
-    ...(branch && branch !== "all" && { branch }),
+    ...(branches && branches !== "all" && { branch: branches }),
   };
   return axios.get<any, SalesResponse>(`${BASE_URL}/sales`, { params });
 };

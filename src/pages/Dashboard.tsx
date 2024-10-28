@@ -7,7 +7,7 @@ import { filterSalesByType } from "@/utils/salesFilters";
 import DashboardContent from "@/components/DashboardContent";
 
 const Dashboard: React.FC = () => {
-  const [selectedBranch, setSelectedBranch] = useState<string>("all");
+  const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [chartType, setChartType] = useState<"all" | "offline" | "online">("all");
@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
   const { toast } = useToast();
   const { branches, items, saleDates, error } = useSalesData(
     dateRange,
-    selectedBranch
+    selectedBranches.length > 0 ? selectedBranches.join(',') : 'all'
   );
 
   useEffect(() => {
@@ -52,24 +52,12 @@ const Dashboard: React.FC = () => {
   );
 
   const branchChartData =
-    selectedBranch === "all" ||
-    selectedBranch === "offline" ||
-    selectedBranch === "online"
-      ? (branches?.data || [])
-          .filter((branch) => branch.isSale === 1)
-          .reduce((acc, branch) => {
-            const branchSales = filteredByType.filter(
-              (sale) => sale.branch_name === branch.name
-            );
-            const totalSales = branchSales.reduce(
-              (sum, sale) => sum + sale.net_sales,
-              0
-            );
-            if (totalSales > 0) {
-              acc.push({ name: branch.name, value: totalSales });
-            }
-            return acc;
-          }, [] as Array<{ name: string; value: number }>)
+    selectedBranches.length > 0
+      ? selectedBranches.map(branch => {
+          const branchSales = filteredByType.filter(sale => sale.branch_name === branch);
+          const totalSales = branchSales.reduce((sum, sale) => sum + sale.net_sales, 0);
+          return { name: branch, value: totalSales };
+        }).filter(data => data.value > 0)
       : [];
 
   const productChartData = Object.values(
@@ -129,24 +117,22 @@ const Dashboard: React.FC = () => {
     )
     .reduce((sum, sale) => sum + sale.net_sales, 0);
 
-  const availableSaleDates = saleDates?.data.map((d) => new Date(d.date)) || [];
-
   return (
     <div className="container mx-auto p-4">
       <FilterPanel
         branches={
           branches?.data.filter((b) => b.isSale === 1).map((b) => b.name) || []
         }
-        selectedBranch={selectedBranch}
-        onBranchChange={setSelectedBranch}
+        selectedBranches={selectedBranches}
+        onBranchChange={setSelectedBranches}
         onSearchChange={setSearchTerm}
         onDateRangeChange={setDateRange}
         dateRange={dateRange}
-        saleDates={availableSaleDates}
+        saleDates={saleDates?.data.map((d) => new Date(d.date)) || []}
       />
       {items?.data && (
         <DashboardContent
-          selectedBranch={selectedBranch}
+          selectedBranch={selectedBranches.length === 0 ? "all" : selectedBranches.join(',')}
           chartType={chartType}
           setChartType={setChartType}
           filteredByType={filteredByType}
