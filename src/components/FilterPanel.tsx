@@ -8,12 +8,10 @@ import { ChevronsUpDown } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Command, CommandInput, CommandList, CommandGroup, CommandItem } from "@/components/ui/command"
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu"
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import type { DateRange } from 'react-day-picker';
 
 interface FilterPanelProps {
@@ -45,6 +43,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   dateRange,
   saleDates,
 }) => {
+  const [open, setOpen] = React.useState(false);
   const [branchSearch, setBranchSearch] = React.useState("");
 
   const handleSelect = (branch: string) => {
@@ -81,10 +80,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         onDateRangeChange={onDateRangeChange} 
         saleDates={saleDates} 
       />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
           <Button
             variant="outline"
+            role="combobox"
+            aria-expanded={open}
             className="w-[200px] justify-between"
           >
             {selectedBranches.length === 0 
@@ -92,8 +93,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               : `${selectedBranches.length} selected`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[200px]">
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandInput 
               placeholder="Search branches..." 
@@ -103,38 +104,49 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <CommandList>
               <ScrollArea className="h-[300px]">
                 <CommandGroup>
-                  <DropdownMenuCheckboxItem
-                    checked={selectedBranches.length === 0}
-                    onCheckedChange={() => onBranchChange([])}
+                  <CommandItem
+                    onSelect={() => onBranchChange([])}
+                    className="cursor-pointer"
                   >
-                    All Branches
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuSeparator />
+                    <div className="flex items-center">
+                      <div className={`mr-2 h-4 w-4 border rounded-sm ${selectedBranches.length === 0 ? 'bg-primary' : ''}`} />
+                      All Branches
+                    </div>
+                  </CommandItem>
                   {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) => (
-                    <DropdownMenuCheckboxItem
+                    <CommandItem
                       key={groupName}
-                      checked={groupBranches.every(branch => selectedBranches.includes(branch))}
-                      onCheckedChange={() => handleGroupSelect(groupBranches)}
+                      onSelect={() => handleGroupSelect(groupBranches)}
+                      className="cursor-pointer"
                     >
-                      {groupName}
-                    </DropdownMenuCheckboxItem>
+                      <div className="flex items-center">
+                        <div className={`mr-2 h-4 w-4 border rounded-sm ${
+                          groupBranches.every(branch => selectedBranches.includes(branch)) ? 'bg-primary' : ''
+                        }`} />
+                        {groupName}
+                      </div>
+                    </CommandItem>
                   ))}
-                  <DropdownMenuSeparator />
                   {filteredBranches.map((branch) => (
-                    <DropdownMenuCheckboxItem
+                    <CommandItem
                       key={branch}
-                      checked={selectedBranches.includes(branch)}
-                      onCheckedChange={() => handleSelect(branch)}
+                      onSelect={() => handleSelect(branch)}
+                      className="cursor-pointer"
                     >
-                      {branch}
-                    </DropdownMenuCheckboxItem>
+                      <div className="flex items-center">
+                        <div className={`mr-2 h-4 w-4 border rounded-sm ${
+                          selectedBranches.includes(branch) ? 'bg-primary' : ''
+                        }`} />
+                        {branch}
+                      </div>
+                    </CommandItem>
                   ))}
                 </CommandGroup>
               </ScrollArea>
             </CommandList>
           </Command>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopoverContent>
+      </Popover>
       {selectedBranches.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedBranches.map(branch => (
