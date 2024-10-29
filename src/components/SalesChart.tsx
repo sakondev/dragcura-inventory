@@ -29,7 +29,7 @@ const COLORS = [
 ];
 
 const SalesChart: React.FC<SalesChartProps> = ({ data = [] }) => {
-  if (!data || data.length === 0) {
+  if (data.length === 0) {
     return <div>No data available</div>;
   }
 
@@ -43,7 +43,6 @@ const SalesChart: React.FC<SalesChartProps> = ({ data = [] }) => {
             cy="50%"
             labelLine={true}
             outerRadius={100}
-            fill="#8884d8"
             dataKey="value"
             label={({ name, percent }) =>
               `${name} ${(percent * 100).toFixed(0)}%`
@@ -57,12 +56,17 @@ const SalesChart: React.FC<SalesChartProps> = ({ data = [] }) => {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) =>
-              value.toLocaleString(undefined, {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 2,
-              })
-            }
+            formatter={(value, name) => {
+              const numericValue = Number(value);
+              return [
+                numericValue.toLocaleString(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                }),
+                name,
+              ];
+            }}
+            labelFormatter={(label) => label}
           />
           <Legend wrapperStyle={{ fontSize: "10px" }} />
         </PieChart>

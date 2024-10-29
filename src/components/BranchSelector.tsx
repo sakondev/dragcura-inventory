@@ -18,6 +18,7 @@ import {
 const BRANCH_GROUPS = {
   "In-Store": ["SAM", "TCC", "RM9", "ESV", "MGB", "EMB", "EMQ"],
   "Vending Machine": ["True Digital Park", "T One Building"],
+  "EW Official": ["EW Official"],
   Online: [
     "Shopee",
     "Lazada",
@@ -62,7 +63,9 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
       selectedBranches.includes(branch)
     );
     if (allSelected) {
-      onBranchChange(selectedBranches.filter((b) => !groupBranches.includes(b)));
+      onBranchChange(
+        selectedBranches.filter((b) => !groupBranches.includes(b))
+      );
     } else {
       const newBranches = [...selectedBranches];
       groupBranches.forEach((branch) => {
@@ -107,44 +110,49 @@ const BranchSelector: React.FC<BranchSelectorProps> = ({
                     All Branches
                   </div>
                 </CommandItem>
-                {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) => (
-                  <CommandItem
-                    key={groupName}
-                    onSelect={() => handleGroupSelect(groupBranches)}
-                    className="cursor-pointer font-medium"
-                  >
-                    <div className="flex items-center">
-                      <div
-                        className={`mr-2 h-4 w-4 border rounded-sm ${
-                          groupBranches.every((branch) =>
-                            selectedBranches.includes(branch)
-                          )
-                            ? "bg-primary"
-                            : ""
-                        }`}
-                      />
-                      {groupName}
-                    </div>
-                  </CommandItem>
-                ))}
-                <CommandSeparator className="my-2" />
-                {Object.entries(BRANCH_GROUPS).map(([groupName, groupBranches]) =>
-                  groupBranches.map((branch) => (
+                {Object.entries(BRANCH_GROUPS).map(
+                  ([groupName, groupBranches]) => (
                     <CommandItem
-                      key={branch}
-                      onSelect={() => handleSelect(branch)}
-                      className="cursor-pointer pl-6"
+                      key={groupName}
+                      onSelect={() => handleGroupSelect(groupBranches)}
+                      className="cursor-pointer font-medium"
                     >
                       <div className="flex items-center">
                         <div
                           className={`mr-2 h-4 w-4 border rounded-sm ${
-                            selectedBranches.includes(branch) ? "bg-primary" : ""
+                            groupBranches.every((branch) =>
+                              selectedBranches.includes(branch)
+                            )
+                              ? "bg-primary"
+                              : ""
                           }`}
                         />
-                        {branch}
+                        {groupName}
                       </div>
                     </CommandItem>
-                  ))
+                  )
+                )}
+                <CommandSeparator className="my-2" />
+                {Object.entries(BRANCH_GROUPS).map(
+                  ([groupName, groupBranches]) =>
+                    groupBranches.map((branch) => (
+                      <CommandItem
+                        key={branch}
+                        onSelect={() => handleSelect(branch)}
+                        className="cursor-pointer pl-6"
+                      >
+                        <div className="flex items-center">
+                          <div
+                            className={`mr-2 h-4 w-4 border rounded-sm ${
+                              selectedBranches.includes(branch)
+                                ? "bg-primary"
+                                : ""
+                            }`}
+                          />
+                          {branch}
+                        </div>
+                      </CommandItem>
+                    ))
                 )}
               </CommandGroup>
             </ScrollArea>
