@@ -14,7 +14,7 @@ const Dashboard: React.FC = () => {
   const { toast } = useToast();
   const { branches, items, saleDates, error } = useSalesData(
     dateRange,
-    selectedBranches.length > 0 ? selectedBranches.join(',') : 'all'
+    selectedBranches.length > 0 ? selectedBranches.join(",") : "all"
   );
 
   useEffect(() => {
@@ -28,13 +28,13 @@ const Dashboard: React.FC = () => {
   }, [error, toast]);
 
   useEffect(() => {
-    if (saleDates?.data && saleDates.data.length > 0 && !dateRange) {
+    if (saleDates?.data && saleDates.data.length > 0) {
       const latestDate = new Date(
         Math.max(...saleDates.data.map((d) => new Date(d.date).getTime()))
       );
       setDateRange({ from: latestDate, to: latestDate });
     }
-  }, [saleDates, dateRange]);
+  }, [saleDates]);
 
   const filteredSales = (items?.data || []).filter((sale) => {
     const matchesSearch =
@@ -53,7 +53,10 @@ const Dashboard: React.FC = () => {
   const branchChartData = Object.values(
     filteredByType.reduce((acc, sale) => {
       // Only include selected branches or all branches if none selected
-      if (selectedBranches.length === 0 || selectedBranches.includes(sale.branch_name)) {
+      if (
+        selectedBranches.length === 0 ||
+        selectedBranches.includes(sale.branch_name)
+      ) {
         if (!acc[sale.branch_name]) {
           acc[sale.branch_name] = {
             name: sale.branch_name,
@@ -138,7 +141,9 @@ const Dashboard: React.FC = () => {
       />
       {items?.data && (
         <DashboardContent
-          selectedBranch={selectedBranches.length === 0 ? "all" : selectedBranches.join(',')}
+          selectedBranch={
+            selectedBranches.length === 0 ? "all" : selectedBranches.join(",")
+          }
           filteredByType={filteredByType}
           totalSales={totalSales}
           inStoreSales={inStoreSales}

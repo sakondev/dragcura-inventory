@@ -27,6 +27,10 @@ export function DateRangePicker({
     DateRange | undefined
   >(dateRange);
 
+  React.useEffect(() => {
+    setSelectedRange(dateRange);
+  }, [dateRange]);
+
   const disabledDate = (date: Date) => {
     return !saleDates.some(
       (saleDate) =>
