@@ -11,7 +11,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // Initialize state from localStorage during component creation
     return localStorage.getItem("auth_token") !== null;
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -22,19 +21,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuthenticated(!!token);
     setIsLoading(false);
 
-    // Redirect to login if no token found
     if (!token && window.location.pathname !== "/login") {
       navigate("/login");
     }
   }, [navigate]);
 
-  const login = async (username: string, password: string) => {
-    if (username === "dragcura" && password === "dragcura321") {
+  const login = async (_username: string, password: string) => {
+    if (password === "dragcura321") {
       localStorage.setItem("auth_token", "dummy_token");
       setIsAuthenticated(true);
       navigate("/");
     } else {
-      throw new Error("Invalid credentials");
+      throw new Error("Invalid password");
     }
   };
 

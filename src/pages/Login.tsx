@@ -5,17 +5,16 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(username, password);
+      await login("dragcura", password);
       toast.success("Login successful");
     } catch (error) {
-      toast.error("Invalid credentials");
+      toast.error("Invalid password");
     }
   };
 
@@ -26,18 +25,11 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div>
-            <Input
               type="password"
-              placeholder="Password"
+              placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="w-full"
             />
           </div>
           <Button type="submit" className="w-full">
