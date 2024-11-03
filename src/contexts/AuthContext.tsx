@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -12,13 +11,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return Cookies.get("auth_token") !== undefined;
+    return localStorage.getItem("auth_token") !== null;
   });
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = Cookies.get("auth_token");
+    const token = localStorage.getItem("auth_token");
     setIsAuthenticated(!!token);
     setIsLoading(false);
 
@@ -29,8 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = async (_username: string, password: string) => {
     if (password === "dragcura321") {
-      // Set cookie to expire in 7 days
-      Cookies.set("auth_token", "dummy_token", { expires: 7 });
+      localStorage.setItem("auth_token", "dummy_token");
       setIsAuthenticated(true);
       navigate("/");
     } else {
@@ -39,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
-    Cookies.remove("auth_token");
+    localStorage.removeItem("auth_token");
     setIsAuthenticated(false);
     navigate("/login");
   };
