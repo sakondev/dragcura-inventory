@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-import { ArrowUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import type { Branch, InventoryItem } from "@/types/inventory";
+import InventoryTableHeader from "./inventory/InventoryTableHeader";
+import QuantityCell from "./inventory/QuantityCell";
 
 interface InventoryTableProps {
   inventory: InventoryItem[];
@@ -94,65 +87,12 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
   return (
     <div className="overflow-x-auto">
       <Table>
-        <TableHeader>
-          <TableRow className="bg-gray-100">
-            <TableHead className="p-1 text-sm">SKU</TableHead>
-            {renderSeparator()}
-            <TableHead className="p-1 text-sm">Name</TableHead>
-            {renderSeparator()}
-            {selectedBranch !== "all" && (
-              <>
-                <TableHead className="p-1 text-sm">Brand</TableHead>
-                {renderSeparator()}
-              </>
-            )}
-            {selectedBranch === "all" ? (
-              branches
-                .filter((branch) => branch.id >= 1 && branch.id <= 12)
-                .map((branch) => (
-                  <React.Fragment key={branch.id}>
-                    <TableHead className="p-1 text-center">
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleSort(branch.name)}
-                        className="font-semibold text-sm truncate w-16"
-                      >
-                        {branch.name}
-                        <ArrowUpDown className="ml-1 h-2 w-2" />
-                      </Button>
-                    </TableHead>
-                    {renderSeparator()}
-                  </React.Fragment>
-                ))
-            ) : (
-              <>
-                <TableHead className="p-1 text-center">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleSort(selectedBranch)}
-                    className="font-semibold text-sm"
-                  >
-                    Qty
-                    <ArrowUpDown className="ml-1 h-2 w-2" />
-                  </Button>
-                </TableHead>
-                {renderSeparator()}
-              </>
-            )}
-            {selectedBranch === "all" && (
-              <TableHead className="p-2 text-center">
-                <Button
-                  variant="ghost"
-                  onClick={handleSortTotal}
-                  className="font-semibold text-sm"
-                >
-                  Total
-                  <ArrowUpDown className="ml-1 h-2 w-2" />
-                </Button>
-              </TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
+        <InventoryTableHeader
+          branches={branches}
+          selectedBranch={selectedBranch}
+          onSort={handleSort}
+          onSortTotal={handleSortTotal}
+        />
         <TableBody>
           {sortedInventory.map((item) => {
             const total =
@@ -182,22 +122,37 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                 {selectedBranch === "all" ? (
                   branches
                     .filter((branch) => branch.id >= 1 && branch.id <= 12)
-                    .map((branch) => (
-                      <React.Fragment key={branch.id}>
-                        <TableCell className="p-1 text-center text-sm">
-                          {inventory.find(
-                            (inv) =>
-                              inv.item_sku === item.item_sku &&
-                              inv.branch_name === branch.name
-                          )?.qty ?? 0}
-                        </TableCell>
-                        {renderSeparator()}
-                      </React.Fragment>
-                    ))
+                    .map((branch) => {
+                      const branchQty =
+                        inventory.find(
+                          (inv) =>
+                            inv.item_sku === item.item_sku &&
+                            inv.branch_name === branch.name
+                        )?.qty ?? 0;
+
+                      return (
+                        <React.Fragment key={branch.id}>
+                          <TableCell className="p-1 text-center text-sm">
+                            <QuantityCell
+                              qty={branchQty}
+                              sku={item.item_sku}
+                              branchId={branch.id}
+                            />
+                          </TableCell>
+                          {renderSeparator()}
+                        </React.Fragment>
+                      );
+                    })
                 ) : (
                   <>
                     <TableCell className="p-1 text-center text-sm">
-                      {item.qty}
+                      <QuantityCell
+                        qty={item.qty}
+                        sku={item.item_sku}
+                        branchId={
+                          branches.find((b) => b.name === selectedBranch)?.id
+                        }
+                      />
                     </TableCell>
                     {renderSeparator()}
                   </>
