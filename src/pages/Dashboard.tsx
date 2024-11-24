@@ -5,6 +5,9 @@ import { DateRange } from "react-day-picker";
 import { useSalesData } from "@/hooks/useSalesData";
 import { filterSalesByType } from "@/utils/salesFilters";
 import DashboardContent from "@/components/DashboardContent";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 const Dashboard: React.FC = () => {
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
@@ -126,6 +129,42 @@ const Dashboard: React.FC = () => {
     )
     .reduce((sum, sale) => sum + sale.net_sales, 0);
 
+  const handleCopyTable = () => {
+    const table = document.querySelector("table");
+    if (table) {
+      const rows = Array.from(table.querySelectorAll("tr"));
+      const csvContent = rows
+        .map((row) =>
+          Array.from(row.querySelectorAll("th, td"))
+            .map((cell) => cell.textContent)
+            .join("\t")
+        )
+        .join("\n");
+
+      navigator.clipboard
+        .writeText(csvContent)
+        .then(() => {
+          toast.success(`Copied ${rows.length - 1} rows to clipboard`);
+        })
+        .catch((err) => {
+          toast.error("Failed to copy table");
+          console.error("Failed to copy table: ", err);
+        });
+    }
+  };
+
+  const handleExportExcel = () => {
+    const table = document.querySelector("table");
+    if (table) {
+      const wb = XLSX.utils.table_to_book(table);
+      const fileName = `DragCura_Sales_${dateRange?.from ? new Date(dateRange.from).toISOString().split('T')[0] : 'all'}_to_${dateRange?.to ? new Date(dateRange.to).toISOString().split('T')[0] : 'all'}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      toast.success(`Exported to ${fileName}`);
+    } else {
+      toast.error("Failed to export table");
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <FilterPanel
@@ -140,18 +179,24 @@ const Dashboard: React.FC = () => {
         saleDates={saleDates?.data.map((d) => new Date(d.date)) || []}
       />
       {items?.data && (
-        <DashboardContent
-          selectedBranch={
-            selectedBranches.length === 0 ? "all" : selectedBranches.join(",")
-          }
-          filteredByType={filteredByType}
-          totalSales={totalSales}
-          inStoreSales={inStoreSales}
-          onlineSales={onlineSales}
-          branchChartData={branchChartData}
-          productChartData={productChartData}
-          tableData={tableData}
-        />
+        <>
+          <div className="mb-4 flex justify-start space-x-2">
+            <Button onClick={handleCopyTable}>COPY</Button>
+            <Button onClick={handleExportExcel}>EXCEL</Button>
+          </div>
+          <DashboardContent
+            selectedBranch={
+              selectedBranches.length === 0 ? "all" : selectedBranches.join(",")
+            }
+            filteredByType={filteredByType}
+            totalSales={totalSales}
+            inStoreSales={inStoreSales}
+            onlineSales={onlineSales}
+            branchChartData={branchChartData}
+            productChartData={productChartData}
+            tableData={tableData}
+          />
+        </>
       )}
     </div>
   );
