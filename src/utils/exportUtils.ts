@@ -1,6 +1,7 @@
 import * as XLSX from "xlsx";
 import { SaleItem } from "@/types/sales";
 import { toast } from "sonner";
+import { DateRange } from "react-day-picker";
 
 interface ExportData {
   SKU: string;
@@ -10,7 +11,7 @@ interface ExportData {
   Value: number;
 }
 
-export const exportSalesByBranch = (items: SaleItem[], dateRange: { from: Date | undefined; to: Date | undefined }) => {
+export const exportSalesByBranch = (items: SaleItem[], dateRange: DateRange | undefined) => {
   if (!items) return;
 
   // Create data for Excel
