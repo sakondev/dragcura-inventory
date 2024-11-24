@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import FilterPanel from "../components/FilterPanel";
-import { useToast } from "@/components/ui/use-toast";
 import { DateRange } from "react-day-picker";
 import { useSalesData } from "@/hooks/useSalesData";
 import { filterSalesByType } from "@/utils/salesFilters";
@@ -14,7 +13,6 @@ const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
-  const { toast } = useToast();
   const { branches, items, saleDates, error } = useSalesData(
     dateRange,
     selectedBranches.length > 0 ? selectedBranches.join(",") : "all"
@@ -22,13 +20,9 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (error) {
-      toast({
-        title: "Error",
-        description: "Unable to load data. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Unable to load data. Please try again.");
     }
-  }, [error, toast]);
+  }, [error]);
 
   useEffect(() => {
     if (saleDates?.data && saleDates.data.length > 0) {
@@ -55,7 +49,6 @@ const Dashboard: React.FC = () => {
 
   const branchChartData = Object.values(
     filteredByType.reduce((acc, sale) => {
-      // Only include selected branches or all branches if none selected
       if (
         selectedBranches.length === 0 ||
         selectedBranches.includes(sale.branch_name)
@@ -144,10 +137,10 @@ const Dashboard: React.FC = () => {
       navigator.clipboard
         .writeText(csvContent)
         .then(() => {
-          toast.success(`Copied ${rows.length - 1} rows to clipboard`);
+          toast.success(`คัดลอก ${rows.length - 1} แถวไปยังคลิปบอร์ดแล้ว`);
         })
         .catch((err) => {
-          toast.error("Failed to copy table");
+          toast.error("ไม่สามารถคัดลอกตารางได้");
           console.error("Failed to copy table: ", err);
         });
     }
@@ -159,9 +152,9 @@ const Dashboard: React.FC = () => {
       const wb = XLSX.utils.table_to_book(table);
       const fileName = `DragCura_Sales_${dateRange?.from ? new Date(dateRange.from).toISOString().split('T')[0] : 'all'}_to_${dateRange?.to ? new Date(dateRange.to).toISOString().split('T')[0] : 'all'}.xlsx`;
       XLSX.writeFile(wb, fileName);
-      toast.success(`Exported to ${fileName}`);
+      toast.success(`ส่งออกไปยัง ${fileName} แล้ว`);
     } else {
-      toast.error("Failed to export table");
+      toast.error("ไม่สามารถส่งออกตารางได้");
     }
   };
 
