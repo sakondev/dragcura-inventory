@@ -138,10 +138,10 @@ const Dashboard: React.FC = () => {
       navigator.clipboard
         .writeText(csvContent)
         .then(() => {
-          toast.success(`คัดลอก ${rows.length - 1} แถวไปยังคลิปบอร์ดแล้ว`);
+          toast.success(`Copied ${rows.length - 1} rows to clipboard`);
         })
         .catch((err) => {
-          toast.error("ไม่สามารถคัดลอกตารางได้");
+          toast.error("Failed to copy table");
           console.error("Failed to copy table: ", err);
         });
     }
@@ -151,11 +151,19 @@ const Dashboard: React.FC = () => {
     const table = document.querySelector("table");
     if (table) {
       const wb = XLSX.utils.table_to_book(table);
-      const fileName = `DragCura_Sales_${dateRange?.from ? new Date(dateRange.from).toISOString().split('T')[0] : 'all'}_to_${dateRange?.to ? new Date(dateRange.to).toISOString().split('T')[0] : 'all'}.xlsx`;
+      const fileName = `DragCura_Sales_${
+        dateRange?.from
+          ? new Date(dateRange.from).toISOString().split("T")[0]
+          : "all"
+      }_to_${
+        dateRange?.to
+          ? new Date(dateRange.to).toISOString().split("T")[0]
+          : "all"
+      }.xlsx`;
       XLSX.writeFile(wb, fileName);
-      toast.success(`ส่งออกไปยัง ${fileName} แล้ว`);
+      toast.success(`Exported to ${fileName}`);
     } else {
-      toast.error("ไม่สามารถส่งออกตารางได้");
+      toast.error("Failed to export table");
     }
   };
 
