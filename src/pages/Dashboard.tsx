@@ -7,6 +7,7 @@ import DashboardContent from "@/components/DashboardContent";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
+import { exportSalesByBranch } from "@/utils/exportUtils";
 
 const Dashboard: React.FC = () => {
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
@@ -160,69 +161,7 @@ const Dashboard: React.FC = () => {
 
   const handleExportExcelByBranch = () => {
     if (!items?.data) return;
-
-    // Get unique SKUs and product names
-    const products = Array.from(
-      new Set(items.data.map((item) => item.item_sku))
-    ).map((sku) => {
-      const item = items.data.find((i) => i.item_sku === sku);
-      return {
-        sku,
-        name: item?.item_name || "",
-      };
-    });
-
-    // Get unique branches
-    const uniqueBranches = Array.from(
-      new Set(items.data.map((item) => item.branch_name))
-    ).sort();
-
-    // Create data for Excel
-    const excelData = products.map((product) => {
-      const row: any = {
-        SKU: product.sku,
-        "Product Name": product.name,
-      };
-
-      // Add quantity for each branch
-      uniqueBranches.forEach((branch) => {
-        const branchQty = items.data
-          .filter(
-            (item) =>
-              item.item_sku === product.sku && item.branch_name === branch
-          )
-          .reduce((sum, item) => sum + item.qty, 0);
-        row[`${branch} Qty`] = branchQty;
-      });
-
-      // Add total quantity
-      row["Total Qty"] = items.data
-        .filter((item) => item.item_sku === product.sku)
-        .reduce((sum, item) => sum + item.qty, 0);
-
-      return row;
-    });
-
-    // Create and download Excel file
-    const ws = XLSX.utils.json_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Sales By Branch");
-
-    const fileName = `DragCura_Sales_ByBranch_${
-      dateRange?.from
-        ? new Date(dateRange.from).toISOString().split("T")[0]
-        : "all"
-    }_to_${
-      dateRange?.to ? new Date(dateRange.to).toISOString().split("T")[0] : "all"
-    }.xlsx`;
-
-    try {
-      XLSX.writeFile(wb, fileName);
-      toast.success(`ส่งออกไปยัง ${fileName} แล้ว`);
-    } catch (err) {
-      toast.error("ไม่สามารถส่งออกตารางได้");
-      console.error("Failed to export table: ", err);
-    }
+    exportSalesByBranch(items.data, dateRange);
   };
 
   return (
