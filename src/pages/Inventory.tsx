@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import InventoryTable from "@/components/InventoryTable";
+import InventorySummaryTable from "@/components/inventory/InventorySummaryTable";
 import InventoryFilterPanel from "@/components/InventoryFilterPanel";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import InventorySummary from "@/components/InventorySummary";
@@ -12,6 +15,7 @@ const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
+  const [showSummaryView, setShowSummaryView] = useState(false);
 
   const { branches, stockDates, inventory } = useInventoryData(
     selectedDate,
@@ -36,7 +40,7 @@ const Inventory = () => {
       }, new Date(stockDates[0].date.split(" ")[0]));
       setSelectedDate(closestDate.toISOString().split("T")[0]);
     }
-  }, [stockDates]); // Remove selectedDate from dependency array
+  }, [stockDates]);
 
   const handleCopyTable = () => {
     const table = document.querySelector("table");
@@ -74,6 +78,36 @@ const Inventory = () => {
     }
   };
 
+  const handleExportValue = () => {
+    if (!inventory.length) return;
+
+    const summaryData = branches
+      .filter((branch) => branch.id >= 1 && branch.id <= 12)
+      .map((branch) => {
+        const branchItems = inventory.filter(
+          (item) => item.branch_name === branch.name
+        );
+        const totalQty = branchItems.reduce((sum, item) => sum + item.qty, 0);
+        const totalValue = branchItems.reduce(
+          (sum, item) => sum + ((item.price || 0) * item.qty),
+          0
+        );
+
+        return {
+          Branch: branch.name,
+          "Total Items (Qty)": totalQty,
+          "Total Value": totalValue,
+        };
+      });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(summaryData);
+    XLSX.utils.book_append_sheet(wb, ws, "Inventory Value");
+    const fileName = `DragCura_Inventory_Value_${selectedDate}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+    toast.success(`Exported to ${fileName}`);
+  };
+
   if (!branches.length || !stockDates.length) {
     return <LoadingSpinner />;
   }
@@ -95,16 +129,36 @@ const Inventory = () => {
       ) : (
         <>
           <InventorySummary filteredInventory={filteredInventory} />
-          <div className="mb-4 flex justify-start space-x-2">
-            <Button onClick={handleCopyTable}>COPY</Button>
-            <Button onClick={handleExportExcel}>EXCEL</Button>
+          <div className="mb-4 flex justify-between items-center">
+            <div className="flex space-x-2">
+              <Button onClick={handleCopyTable}>COPY</Button>
+              <Button onClick={handleExportExcel}>EXCEL</Button>
+              <Button onClick={handleExportValue}>EXCEL BY VALUE</Button>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="view-mode"
+                checked={showSummaryView}
+                onCheckedChange={setShowSummaryView}
+              />
+              <Label htmlFor="view-mode">
+                {showSummaryView ? "Summary View" : "Detail View"}
+              </Label>
+            </div>
           </div>
-          <InventoryTable
-            inventory={filteredInventory}
-            branches={branches}
-            searchTerm={searchTerm}
-            selectedBranch={selectedBranch}
-          />
+          {showSummaryView ? (
+            <InventorySummaryTable
+              inventory={filteredInventory}
+              branches={branches}
+            />
+          ) : (
+            <InventoryTable
+              inventory={filteredInventory}
+              branches={branches}
+              searchTerm={searchTerm}
+              selectedBranch={selectedBranch}
+            />
+          )}
         </>
       )}
     </div>

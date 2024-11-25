@@ -13,6 +13,8 @@ export interface InventoryItem {
   item_sku: string;
   last_updated: string;
   qty: number;
+  cost?: number;
+  price?: number;
 }
 
 export interface StockDate {
@@ -26,6 +28,8 @@ export interface Item {
   item_group: string | null;
   name: string;
   sku: string;
+  cost: number;
+  price: number;
 }
 
 export interface BranchesResponse {
