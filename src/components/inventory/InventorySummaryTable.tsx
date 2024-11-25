@@ -1,7 +1,9 @@
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-import type { Branch, InventoryItem } from "@/types/inventory";
+import { useQuery } from "@tanstack/react-query";
+import type { Branch, InventoryItem, Item } from "@/types/inventory";
+import { fetchItems } from "@/api/inventoryApi";
 
 interface InventorySummaryTableProps {
   inventory: InventoryItem[];
@@ -12,6 +14,11 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
   inventory,
   branches,
 }) => {
+  const { data: items = [] } = useQuery({
+    queryKey: ["items"],
+    queryFn: fetchItems,
+  });
+
   const renderSeparator = () => (
     <TableCell className="p-0 w-[1px]">
       <Separator orientation="vertical" className="h-full mx-auto" />
@@ -22,8 +29,16 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
     const branchItems = inventory.filter(item => item.branch_name === branchName);
     const uniqueSkus = new Set(branchItems.map(item => item.item_sku));
     const totalQty = branchItems.reduce((sum, item) => sum + item.qty, 0);
-    const totalCost = branchItems.reduce((sum, item) => sum + ((item.cost || 0) * item.qty), 0);
-    const totalValue = branchItems.reduce((sum, item) => sum + ((item.price || 0) * item.qty), 0);
+    
+    const totalCost = branchItems.reduce((sum, item) => {
+      const itemData = items.find(i => i.sku === item.item_sku);
+      return sum + (itemData?.cost || 0) * item.qty;
+    }, 0);
+    
+    const totalValue = branchItems.reduce((sum, item) => {
+      const itemData = items.find(i => i.sku === item.item_sku);
+      return sum + (itemData?.price || 0) * item.qty;
+    }, 0);
     
     return {
       totalQty,
