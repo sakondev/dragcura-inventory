@@ -49,7 +49,12 @@ const Inventory = () => {
       const csvContent = rows
         .map((row) =>
           Array.from(row.querySelectorAll("th, td"))
-            .map((cell) => cell.textContent)
+            .map((cell) => {
+              // Get only the first number (quantity) and ignore anything in parentheses
+              const text = cell.textContent || "";
+              const match = text.match(/^\d+/);
+              return match ? match[0] : text;
+            })
             .join("\t")
         )
         .join("\n");
@@ -69,43 +74,26 @@ const Inventory = () => {
   const handleExportExcel = () => {
     const table = document.querySelector("table");
     if (table) {
-      const wb = XLSX.utils.table_to_book(table);
+      // Create a clone of the table to modify
+      const tableClone = table.cloneNode(true) as HTMLTableElement;
+      
+      // Clean up the quantity cells to remove the days out of stock
+      const cells = tableClone.querySelectorAll("td");
+      cells.forEach(cell => {
+        const text = cell.textContent || "";
+        const match = text.match(/^\d+/);
+        if (match) {
+          cell.textContent = match[0];
+        }
+      });
+
+      const wb = XLSX.utils.table_to_book(tableClone);
       const fileName = `DragCura_Inventory_${selectedDate}.xlsx`;
       XLSX.writeFile(wb, fileName);
       toast.success(`Exported to ${fileName}`);
     } else {
       toast.error("Failed to export table");
     }
-  };
-
-  const handleExportValue = () => {
-    if (!inventory.length) return;
-
-    const summaryData = branches
-      .filter((branch) => branch.id >= 1 && branch.id <= 12)
-      .map((branch) => {
-        const branchItems = inventory.filter(
-          (item) => item.branch_name === branch.name
-        );
-        const totalQty = branchItems.reduce((sum, item) => sum + item.qty, 0);
-        const totalValue = branchItems.reduce(
-          (sum, item) => sum + ((item.price || 0) * item.qty),
-          0
-        );
-
-        return {
-          Branch: branch.name,
-          "Total Items (Qty)": totalQty,
-          "Total Value": totalValue,
-        };
-      });
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(summaryData);
-    XLSX.utils.book_append_sheet(wb, ws, "Inventory Value");
-    const fileName = `DragCura_Inventory_Value_${selectedDate}.xlsx`;
-    XLSX.writeFile(wb, fileName);
-    toast.success(`Exported to ${fileName}`);
   };
 
   if (!branches.length || !stockDates.length) {
@@ -133,7 +121,6 @@ const Inventory = () => {
             <div className="flex space-x-2">
               <Button onClick={handleCopyTable}>COPY</Button>
               <Button onClick={handleExportExcel}>EXCEL</Button>
-              <Button onClick={handleExportValue}>EXCEL BY VALUE</Button>
             </div>
             <div className="flex items-center space-x-2">
               <Switch
