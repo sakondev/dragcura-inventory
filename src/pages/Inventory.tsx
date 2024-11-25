@@ -7,6 +7,7 @@ import * as XLSX from "xlsx";
 import InventorySummary from "@/components/InventorySummary";
 import { useInventoryData } from "@/hooks/useInventoryData";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { exportInventoryByValue } from "@/utils/exportUtils";
 
 const Inventory = () => {
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -36,7 +37,7 @@ const Inventory = () => {
       }, new Date(stockDates[0].date.split(" ")[0]));
       setSelectedDate(closestDate.toISOString().split("T")[0]);
     }
-  }, [stockDates]); // Remove selectedDate from dependency array
+  }, [stockDates]);
 
   const handleCopyTable = () => {
     const table = document.querySelector("table");
@@ -74,6 +75,10 @@ const Inventory = () => {
     }
   };
 
+  const handleExportExcelByValue = () => {
+    exportInventoryByValue(inventory);
+  };
+
   if (!branches.length || !stockDates.length) {
     return <LoadingSpinner />;
   }
@@ -98,6 +103,7 @@ const Inventory = () => {
           <div className="mb-4 flex justify-start space-x-2">
             <Button onClick={handleCopyTable}>COPY</Button>
             <Button onClick={handleExportExcel}>EXCEL</Button>
+            <Button onClick={handleExportExcelByValue}>EXCEL BY VALUE</Button>
           </div>
           <InventoryTable
             inventory={filteredInventory}
