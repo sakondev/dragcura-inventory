@@ -49,12 +49,8 @@ const Inventory = () => {
       const csvContent = rows
         .map((row) =>
           Array.from(row.querySelectorAll("th, td"))
-            .map((cell) => {
-              // Get only the first number (quantity) and ignore anything in parentheses
-              const text = cell.textContent || "";
-              const match = text.match(/^\d+/);
-              return match ? match[0] : text;
-            })
+            .filter((cell) => !cell.classList.contains("p-0")) // Skip separator cells
+            .map((cell) => cell.textContent?.trim())
             .join("\t")
         )
         .join("\n");
@@ -62,10 +58,10 @@ const Inventory = () => {
       navigator.clipboard
         .writeText(csvContent)
         .then(() => {
-          toast.success(`Copied ${rows.length - 1} rows to clipboard`);
+          toast.success(`คัดลอก ${rows.length - 1} แถวไปยังคลิปบอร์ดแล้ว`);
         })
         .catch((err) => {
-          toast.error("Failed to copy table");
+          toast.error("ไม่สามารถคัดลอกตารางได้");
           console.error("Failed to copy table: ", err);
         });
     }
@@ -77,22 +73,16 @@ const Inventory = () => {
       // Create a clone of the table to modify
       const tableClone = table.cloneNode(true) as HTMLTableElement;
       
-      // Clean up the quantity cells to remove the days out of stock
-      const cells = tableClone.querySelectorAll("td");
-      cells.forEach(cell => {
-        const text = cell.textContent || "";
-        const match = text.match(/^\d+/);
-        if (match) {
-          cell.textContent = match[0];
-        }
-      });
+      // Remove separator cells
+      const separatorCells = tableClone.querySelectorAll('.p-0');
+      separatorCells.forEach(cell => cell.remove());
 
       const wb = XLSX.utils.table_to_book(tableClone);
       const fileName = `DragCura_Inventory_${selectedDate}.xlsx`;
       XLSX.writeFile(wb, fileName);
-      toast.success(`Exported to ${fileName}`);
+      toast.success(`ส่งออกไปยัง ${fileName} แล้ว`);
     } else {
-      toast.error("Failed to export table");
+      toast.error("ไม่สามารถส่งออกตารางได้");
     }
   };
 
