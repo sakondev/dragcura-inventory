@@ -50,6 +50,21 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
     };
   };
 
+  // Calculate grand totals
+  const grandTotals = branches
+    .filter((branch) => branch.id >= 1 && branch.id <= 12)
+    .reduce(
+      (acc, branch) => {
+        const summary = getBranchSummary(branch.name);
+        return {
+          totalQty: acc.totalQty + summary.totalQty,
+          totalCost: acc.totalCost + summary.totalCost,
+          totalValue: acc.totalValue + summary.totalValue,
+        };
+      },
+      { totalQty: 0, totalCost: 0, totalValue: 0 }
+    );
+
   return (
     <div className="overflow-x-auto">
       <Table>
@@ -93,6 +108,23 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
                 </TableRow>
               );
             })}
+          <TableRow className="border-t-2 border-gray-300 font-bold bg-gray-50">
+            <TableCell className="p-1 text-sm">Total</TableCell>
+            {renderSeparator()}
+            <TableCell className="p-1 text-sm text-right">-</TableCell>
+            {renderSeparator()}
+            <TableCell className="p-1 text-sm text-right">
+              {grandTotals.totalQty.toLocaleString()}
+            </TableCell>
+            {renderSeparator()}
+            <TableCell className="p-1 text-sm text-right">
+              {grandTotals.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </TableCell>
+            {renderSeparator()}
+            <TableCell className="p-1 text-sm text-right">
+              {grandTotals.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </TableCell>
+          </TableRow>
         </TableBody>
       </Table>
     </div>
