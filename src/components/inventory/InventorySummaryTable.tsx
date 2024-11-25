@@ -14,10 +14,12 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
   inventory,
   branches,
 }) => {
-  const { data: items = [] } = useQuery({
+  const { data: itemsResponse } = useQuery({
     queryKey: ["items"],
     queryFn: fetchItems,
   });
+
+  const items = itemsResponse?.data || [];
 
   const renderSeparator = () => (
     <TableCell className="p-0 w-[1px]">
