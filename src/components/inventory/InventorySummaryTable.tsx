@@ -20,6 +20,7 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
 
   const getBranchSummary = (branchName: string) => {
     const branchItems = inventory.filter(item => item.branch_name === branchName);
+    const uniqueSkus = new Set(branchItems.map(item => item.item_sku));
     const totalQty = branchItems.reduce((sum, item) => sum + item.qty, 0);
     const totalCost = branchItems.reduce((sum, item) => sum + ((item.cost || 0) * item.qty), 0);
     const totalValue = branchItems.reduce((sum, item) => sum + ((item.price || 0) * item.qty), 0);
@@ -27,7 +28,8 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
     return {
       totalQty,
       totalCost,
-      totalValue
+      totalValue,
+      uniqueSkus: uniqueSkus.size
     };
   };
 
@@ -37,6 +39,8 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
         <TableHeader>
           <TableRow className="bg-gray-100">
             <TableHead className="p-1 text-sm">Branch</TableHead>
+            {renderSeparator()}
+            <TableHead className="p-1 text-sm text-right">Total SKUs</TableHead>
             {renderSeparator()}
             <TableHead className="p-1 text-sm text-right">Total Qty</TableHead>
             {renderSeparator()}
@@ -53,6 +57,10 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
               return (
                 <TableRow key={branch.id} className="border-b hover:bg-gray-50">
                   <TableCell className="p-1 text-sm">{branch.name}</TableCell>
+                  {renderSeparator()}
+                  <TableCell className="p-1 text-sm text-right">
+                    {summary.uniqueSkus.toLocaleString()}
+                  </TableCell>
                   {renderSeparator()}
                   <TableCell className="p-1 text-sm text-right">
                     {summary.totalQty.toLocaleString()}
