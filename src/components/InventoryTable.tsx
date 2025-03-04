@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
@@ -37,6 +38,11 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
       searchTerm === "" ||
       item.item_sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.item_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filter branches to exclude 11, 12 and include 36
+  const filteredBranches = branches.filter(
+    (branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36)
   );
 
   const handleSort = (branchName: string) => {
@@ -88,7 +94,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
     <div className="overflow-x-auto">
       <Table>
         <InventoryTableHeader
-          branches={branches}
+          branches={filteredBranches}
           selectedBranch={selectedBranch}
           onSort={handleSort}
           onSortTotal={handleSortTotal}
@@ -120,29 +126,27 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                   </>
                 )}
                 {selectedBranch === "all" ? (
-                  branches
-                    .filter((branch) => branch.id >= 1 && branch.id <= 12)
-                    .map((branch) => {
-                      const branchQty =
-                        inventory.find(
-                          (inv) =>
-                            inv.item_sku === item.item_sku &&
-                            inv.branch_name === branch.name
-                        )?.qty ?? 0;
+                  filteredBranches.map((branch) => {
+                    const branchQty =
+                      inventory.find(
+                        (inv) =>
+                          inv.item_sku === item.item_sku &&
+                          inv.branch_name === branch.name
+                      )?.qty ?? 0;
 
-                      return (
-                        <React.Fragment key={branch.id}>
-                          <TableCell className="p-1 text-center text-sm">
-                            <QuantityCell
-                              qty={branchQty}
-                              sku={item.item_sku}
-                              branchId={branch.id}
-                            />
-                          </TableCell>
-                          {renderSeparator()}
-                        </React.Fragment>
-                      );
-                    })
+                    return (
+                      <React.Fragment key={branch.id}>
+                        <TableCell className="p-1 text-center text-sm">
+                          <QuantityCell
+                            qty={branchQty}
+                            sku={item.item_sku}
+                            branchId={branch.id}
+                          />
+                        </TableCell>
+                        {renderSeparator()}
+                      </React.Fragment>
+                    );
+                  })
                 ) : (
                   <>
                     <TableCell className="p-1 text-center text-sm">

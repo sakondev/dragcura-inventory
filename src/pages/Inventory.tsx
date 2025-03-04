@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import InventoryTable from "@/components/InventoryTable";
 import InventorySummaryTable from "@/components/inventory/InventorySummaryTable";
@@ -20,6 +21,11 @@ const Inventory = () => {
   const { branches, stockDates, inventory } = useInventoryData(
     selectedDate,
     selectedBranch
+  );
+
+  // Filter branches to exclude 11, 12 and include 36
+  const filteredBranches = branches.filter(
+    (b) => ![11, 12].includes(b.id) && (b.id <= 10 || b.id === 36)
   );
 
   const filteredInventory = inventory.filter(
@@ -93,7 +99,7 @@ const Inventory = () => {
   return (
     <div className="container mx-auto p-4">
       <InventoryFilterPanel
-        branches={branches.filter((b) => b.id >= 1 && b.id <= 12)}
+        branches={filteredBranches}
         stockDates={stockDates}
         selectedDate={selectedDate}
         selectedBranch={selectedBranch}
@@ -126,12 +132,12 @@ const Inventory = () => {
           {showSummaryView ? (
             <InventorySummaryTable
               inventory={filteredInventory}
-              branches={branches}
+              branches={filteredBranches}
             />
           ) : (
             <InventoryTable
               inventory={filteredInventory}
-              branches={branches}
+              branches={filteredBranches}
               searchTerm={searchTerm}
               selectedBranch={selectedBranch}
             />

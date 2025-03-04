@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   TableHead,
@@ -29,6 +30,11 @@ const InventoryTableHeader: React.FC<InventoryTableHeaderProps> = ({
     </TableCell>
   );
 
+  // Filter branches to exclude 11, 12 and include 36
+  const filteredBranches = branches.filter(
+    (branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36)
+  );
+
   return (
     <TableHeader>
       <TableRow className="bg-gray-100">
@@ -43,23 +49,21 @@ const InventoryTableHeader: React.FC<InventoryTableHeaderProps> = ({
           </>
         )}
         {selectedBranch === "all" ? (
-          branches
-            .filter((branch) => branch.id >= 1 && branch.id <= 12)
-            .map((branch) => (
-              <React.Fragment key={branch.id}>
-                <TableHead className="p-1 text-center">
-                  <Button
-                    variant="ghost"
-                    onClick={() => onSort(branch.name)}
-                    className="font-semibold text-sm truncate w-16"
-                  >
-                    {branch.name}
-                    <ArrowUpDown className="ml-1 h-2 w-2" />
-                  </Button>
-                </TableHead>
-                {renderSeparator()}
-              </React.Fragment>
-            ))
+          filteredBranches.map((branch) => (
+            <React.Fragment key={branch.id}>
+              <TableHead className="p-1 text-center">
+                <Button
+                  variant="ghost"
+                  onClick={() => onSort(branch.name)}
+                  className="font-semibold text-sm truncate w-16"
+                >
+                  {branch.name}
+                  <ArrowUpDown className="ml-1 h-2 w-2" />
+                </Button>
+              </TableHead>
+              {renderSeparator()}
+            </React.Fragment>
+          ))
         ) : (
           <>
             <TableHead className="p-1 text-center">

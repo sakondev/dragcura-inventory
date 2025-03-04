@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
@@ -50,20 +51,22 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
     };
   };
 
+  // Get the filtered branches (exclude 11, 12 and include 36)
+  const filteredBranches = branches
+    .filter((branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36));
+
   // Calculate grand totals
-  const grandTotals = branches
-    .filter((branch) => branch.id >= 1 && branch.id <= 12)
-    .reduce(
-      (acc, branch) => {
-        const summary = getBranchSummary(branch.name);
-        return {
-          totalQty: acc.totalQty + summary.totalQty,
-          totalCost: acc.totalCost + summary.totalCost,
-          totalValue: acc.totalValue + summary.totalValue,
-        };
-      },
-      { totalQty: 0, totalCost: 0, totalValue: 0 }
-    );
+  const grandTotals = filteredBranches.reduce(
+    (acc, branch) => {
+      const summary = getBranchSummary(branch.name);
+      return {
+        totalQty: acc.totalQty + summary.totalQty,
+        totalCost: acc.totalCost + summary.totalCost,
+        totalValue: acc.totalValue + summary.totalValue,
+      };
+    },
+    { totalQty: 0, totalCost: 0, totalValue: 0 }
+  );
 
   return (
     <div className="overflow-x-auto">
@@ -82,32 +85,30 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {branches
-            .filter((branch) => branch.id >= 1 && branch.id <= 12)
-            .map((branch) => {
-              const summary = getBranchSummary(branch.name);
-              return (
-                <TableRow key={branch.id} className="border-b hover:bg-gray-50">
-                  <TableCell className="p-1 text-sm">{branch.name}</TableCell>
-                  {renderSeparator()}
-                  <TableCell className="p-1 text-sm text-right">
-                    {summary.uniqueSkus.toLocaleString()}
-                  </TableCell>
-                  {renderSeparator()}
-                  <TableCell className="p-1 text-sm text-right">
-                    {summary.totalQty.toLocaleString()}
-                  </TableCell>
-                  {renderSeparator()}
-                  <TableCell className="p-1 text-sm text-right">
-                    {summary.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </TableCell>
-                  {renderSeparator()}
-                  <TableCell className="p-1 text-sm text-right">
-                    {summary.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+          {filteredBranches.map((branch) => {
+            const summary = getBranchSummary(branch.name);
+            return (
+              <TableRow key={branch.id} className="border-b hover:bg-gray-50">
+                <TableCell className="p-1 text-sm">{branch.name}</TableCell>
+                {renderSeparator()}
+                <TableCell className="p-1 text-sm text-right">
+                  {summary.uniqueSkus.toLocaleString()}
+                </TableCell>
+                {renderSeparator()}
+                <TableCell className="p-1 text-sm text-right">
+                  {summary.totalQty.toLocaleString()}
+                </TableCell>
+                {renderSeparator()}
+                <TableCell className="p-1 text-sm text-right">
+                  {summary.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </TableCell>
+                {renderSeparator()}
+                <TableCell className="p-1 text-sm text-right">
+                  {summary.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </TableCell>
+              </TableRow>
+            );
+          })}
           <TableRow className="border-t-2 border-gray-300 font-bold bg-gray-50">
             <TableCell className="p-1 text-sm">Total</TableCell>
             {renderSeparator()}
