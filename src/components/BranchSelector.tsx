@@ -17,7 +17,7 @@ import {
 
 const BRANCH_GROUPS = {
   "In-Store": ["SAM", "TCC", "RM9", "ESV", "MGB", "EMB", "EMQ"],
-  "Vending Machine": ["True Digital Park", "T One Building"],
+  //"Vending Machine": ["True Digital Park", "T One Building"],
   "EW Official": ["EW Official"],
   Online: [
     "Shopee",
