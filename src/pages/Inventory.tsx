@@ -25,7 +25,7 @@ const Inventory = () => {
 
   // Filter branches to exclude 11, 12 and include 36
   const filteredBranches = branches.filter(
-    (b) => ![11, 12].includes(b.id) && (b.id <= 10 || b.id === 36)
+    (b) => ![11, 12].includes(b.id) && (b.id <= 10 || b.id === 36 || b.id === 44)
   );
 
   const filteredInventory = inventory.filter(

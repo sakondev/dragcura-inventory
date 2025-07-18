@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/popover";
 
 const BRANCH_GROUPS = {
-  "In-Store": ["SAM", "TCC", "RM9", "ESV", "MGB", "EMB", "EMQ"],
+  "In-Store": ["SAM", "TCC", "RM9", "ESV", "MGB", "EMB", "EMQ", "GSN"],
   //"Vending Machine": ["True Digital Park", "T One Building"],
   "EW Official": ["EW Official"],
   Online: [
