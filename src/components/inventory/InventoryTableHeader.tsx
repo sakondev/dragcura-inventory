@@ -32,7 +32,7 @@ const InventoryTableHeader: React.FC<InventoryTableHeaderProps> = ({
 
   // Filter branches to exclude 11, 12 and include 36
   const filteredBranches = branches.filter(
-    (branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36)
+    (branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36 || branch.id === 44)
   );
 
   return (
