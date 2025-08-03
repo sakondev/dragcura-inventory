@@ -53,7 +53,7 @@ const InventorySummaryTable: React.FC<InventorySummaryTableProps> = ({
 
   // Get the filtered branches (exclude 11, 12 and include 36)
   const filteredBranches = branches
-    .filter((branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36));
+    .filter((branch) => ![11, 12].includes(branch.id) && (branch.id <= 10 || branch.id === 36 || branch.id === 44));
 
   // Calculate grand totals
   const grandTotals = filteredBranches.reduce(
