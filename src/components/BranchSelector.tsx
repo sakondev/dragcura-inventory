@@ -26,14 +26,9 @@ const BRANCH_GROUPS = {
     "LINE",
     "LINE MyShop",
     "dragcura.com",
-    "COL",
-    "Unknow",
     "Flipper (Shopee)",
     "Flipper (Lazada)",
-    "ฝ่ายขาย",
-    "B-Healthy",
-    "ฝากขาย",
-    "Facebook",
+    "ONL",
   ],
 };
 
