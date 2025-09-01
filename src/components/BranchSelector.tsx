@@ -23,12 +23,13 @@ const BRANCH_GROUPS = {
     "Shopee",
     "Lazada",
     "TikTok",
-    "LINE",
     "LINE MyShop",
     "dragcura.com",
     "Flipper (Shopee)",
     "Flipper (Lazada)",
     "ONL",
+    "Amaze",
+    "COL",
   ],
 };
 
